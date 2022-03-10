@@ -124,6 +124,8 @@ protected:
     real intrassbias;
 
 
+    /*control variables for temperature annealing*/
+    real tempannrate;
 
 
 public:
@@ -142,6 +144,7 @@ public:
     bool getRestart(){return restart;}
 
     real getTemperature(){ return temperature; }
+    real getTempAnnealRate(){ return tempannrate; }
     real getTimeStep(){ return dt;}
     real getGamma(){ return gamma; }
     real getLambda(){ return lambda; }
@@ -212,7 +215,7 @@ public:
 
 
     Svec getLiquidGroups(){ return liquidgrps; }
-
+    void annealingTemperature();
 
 
 };
