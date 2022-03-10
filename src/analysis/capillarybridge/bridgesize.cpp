@@ -31,6 +31,7 @@ void BridgeSize::getSpecificParameters(){
     command->getCommandSingleOption("-dz", dz, &dz);
     command->getCommandSingleOption("-dd", dcrit, &dcrit);
     command->getCommandSingleOption("-dr", dr, &dr);
+    /*Considering the pillar height*/
     command->getCommandSingleOption("-ph", pilheight, &pilheight);
     surfaceb=control->getWallMinPosition()[2]+pilheight;
     surfacet=control->getWallMaxPosition()[2]-pilheight;
