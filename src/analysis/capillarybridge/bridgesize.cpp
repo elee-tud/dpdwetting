@@ -88,7 +88,7 @@ void BridgeSize::calculateStep(int step){
         }
         else{
 //            int idxz=static_cast<int>((surfacet-particles[liquididx[i]]->coord[2]-0.5*dz)/dz);
-            int idxz=static_cast<int>((surfacet-particles[liquididx[i]]->coord[2]/dz);
+            int idxz=static_cast<int>((surfacet-particles[liquididx[i]]->coord[2])/dz);
             if(idxz>=0 && idxz<numz)
                 topdensity[idxz][idxx]+=1.;
         }
