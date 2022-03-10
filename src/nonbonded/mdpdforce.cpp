@@ -18,6 +18,9 @@ MDPDForce::MDPDForce(Topology* topol, Configuration* config, Decomposition* deco
 }
 
 void MDPDForce::calculatePairForce(int index1, int index2){
+    temp=control->getTemperature();
+    q=sqrt(2*gamma*temp);
+
     Real3D rij=pbc.getMinimumImageVector(particles[index2]->coord, particles[index1]->coord);
     real dist=rij.abs();
     Real3D eij=rij.unit();
@@ -52,6 +55,9 @@ void MDPDForce::calculatePairForce(int index1, int index2){
 }
 
 void MDPDForce::calculatePairForce(int index1, int index2, Real3D com, real** press, real dr){
+    temp=control->getTemperature();
+    q=sqrt(2*gamma*temp);
+
     Real3D rij=pbc.getMinimumImageVector(particles[index2]->coord, particles[index1]->coord);
     real dist=rij.abs();
     Real3D eij=rij.unit();
