@@ -31,6 +31,7 @@ void BridgeSize::getSpecificParameters(){
     command->getCommandSingleOption("-dz", dz, &dz);
     command->getCommandSingleOption("-dd", dcrit, &dcrit);
     command->getCommandSingleOption("-dr", dr, &dr);
+    /*Considering the pillar height*/
     command->getCommandSingleOption("-ph", pilheight, &pilheight);
     surfaceb=control->getWallMinPosition()[2]+pilheight;
     surfacet=control->getWallMaxPosition()[2]-pilheight;
@@ -57,7 +58,7 @@ void BridgeSize::initializeVariables(){
     
 
     numx=static_cast<int>((box[0])/dr);
-    numz=static_cast<int>((zcenter-surfaceb-dz*0.5)/dz);
+    numz=static_cast<int>((zcenter-surfaceb)/dz);
     topdensity=Rvec2D(numz, Rvec(numx, 0));
     botdensity=Rvec2D(numz, Rvec(numx, 0));
     interface=Rvec2D(numz, Rvec(4, 0));
@@ -80,12 +81,14 @@ void BridgeSize::calculateStep(int step){
         int idxx=static_cast<int>(particles[liquididx[i]]->coord[0]/dr);
         real distzfc=particles[liquididx[i]]->coord[2]-zcenter;
         if(distzfc<0){ 
-            int idxz=static_cast<int>((particles[liquididx[i]]->coord[2]-surfaceb-0.5*dz)/dz);
+//            int idxz=static_cast<int>((particles[liquididx[i]]->coord[2]-surfaceb-0.5*dz)/dz);
+            int idxz=static_cast<int>((particles[liquididx[i]]->coord[2]-surfaceb)/dz);
             if(idxz>=0 && idxz<numz)
                 botdensity[idxz][idxx]+=1.;
         }
         else{
-            int idxz=static_cast<int>((surfacet-particles[liquididx[i]]->coord[2]-0.5*dz)/dz);
+//            int idxz=static_cast<int>((surfacet-particles[liquididx[i]]->coord[2]-0.5*dz)/dz);
+            int idxz=static_cast<int>((surfacet-particles[liquididx[i]]->coord[2]/dz);
             if(idxz>=0 && idxz<numz)
                 topdensity[idxz][idxx]+=1.;
         }
