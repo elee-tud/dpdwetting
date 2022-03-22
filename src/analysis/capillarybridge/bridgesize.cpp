@@ -104,7 +104,9 @@ void BridgeSize::calculateStep(int step){
         std::cout << i*dr << "   " << botdensity[0][i] << "   " << topdensity[0][i] << "   " << botdensity[1][i] << "   " << topdensity[1][i] << std::endl;
     }
     */
+    int centerxidx=numx/2;
     for(int i=0;i<numz;i++){
+        /*
         for(int k=0;k<numx-1;k++){
             if(botdensity[i][k]<dcrit && botdensity[i][k+1]>=dcrit){
                 interface[i][0]=k*dr+dr/(botdensity[i][k+1]-botdensity[i][k])*(dcrit-botdensity[i][k]);
@@ -129,6 +131,36 @@ void BridgeSize::calculateStep(int step){
                 break;
             }
         }
+        */
+        //Interface bottom left
+        for(int k=centerxidx;k>0;k--){
+            if(botdensity[i][k]>=dcrit && botdensity[i][k-1]<dcrit){
+                interface[i][0]=dr*(k-(botdensity[i][k]-dcrit)/(botdensity[i][k]-botdensity[i][k-1]));
+                break;
+            }
+        }
+        //Interface top left
+        for(int k=centerxidx;k>0;k--){
+            if(topdensity[i][k]>=dcrit && topdensity[i][k-1]<dcrit){
+                interface[i][2]=dr*(k-(topdensity[i][k]-dcrit)/(topdensity[i][k]-topdensity[i][k-1]));
+                break;
+            }
+        }
+        //Interface bottom right
+        for(int k=centerxidx;i<numx-1;k++){
+            if(botdensity[i][k]>=dcrit && botdensity[i][k+1]<dcrit){
+                interface[i][1]=dr*(k+(botdensity[i][k]-dcrit)/(botdensity[i][k]-botdensity[i][k+1]));
+                break;
+            }
+        }
+        //Interface top right
+        for(int k=centerxidx;i<numx-1;k++){
+            if(topdensity[i][k]>=dcrit && topdensity[i][k+1]<dcrit){
+                interface[i][3]=dr*(k+(topdensity[i][k]-dcrit)/(topdensity[i][k]-topdensity[i][k+1]));
+                break;
+            }
+        }
+
     }
     tevol[0][step]=(atan2(dz, interface[1][0]-interface[0][0])+atan2(dz, interface[0][3]-interface[1][3]))*90/PI;
     tevol[1][step]=(atan2(dz, interface[0][1]-interface[1][1])+atan2(dz, interface[1][2]-interface[0][2]))*90/PI;
