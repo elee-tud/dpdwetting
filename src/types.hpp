@@ -37,6 +37,11 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T>& v){
 
 }
 
+template <typename T> 
+int sign(T val){
+    return (T(0) < val)-(val < T(0));
+}
+
 
 #define RUN 0
 #define DROPSIZE 1
