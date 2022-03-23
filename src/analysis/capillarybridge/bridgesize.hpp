@@ -3,6 +3,8 @@
 
 #include "../property.hpp"
 #include "../particlegroup.hpp"
+#include "../../tools/ellipse_fit.hpp"
+#include "../../tools/polynom_fit.hpp"
 namespace dpd{
 
 class BridgeSize:public Property{
@@ -19,8 +21,13 @@ private:
     int nliqptcls;
     Rvec2D topdensity;
     Rvec2D botdensity;
-    Rvec2D interface;
     real pilheight;
+    Rvec2D ellipsepts;
+
+    int pmorder;
+    int nfpts;
+
+    
 
 
     
