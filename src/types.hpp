@@ -78,6 +78,7 @@ int sign(T val){
 #define BRIDGEALDENS 33
 #define BRIDGEZD 34
 #define BRIDGEDENSXZ 35
+#define BRIDGECLINE 36
 
 #define TRUEPTCL 0
 #define GHOSTPTCL 1

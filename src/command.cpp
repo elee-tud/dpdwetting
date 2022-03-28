@@ -190,6 +190,10 @@ void Command::getProgramOption(){
                 program=BRIDGEDENSXZ;
                 error=false;
             }
+            else if(argv[1].compare("brdgcline")==0){
+                program=BRIDGECLINE;
+                error=false;
+            }
             getCommandOptionAnalysis();
         }
         if(error && mpi->isMaster()){

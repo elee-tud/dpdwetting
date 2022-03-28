@@ -126,6 +126,9 @@ void InitAnalysis::loadProperty(){
     else if(program==BRIDGEDENSXZ){
         prop=new BridgeDensityXZ(initset);
     }
+    else if(program==BRIDGECLINE){
+        prop=new BridgeCline(initset);
+    }
     return;
 }
 
