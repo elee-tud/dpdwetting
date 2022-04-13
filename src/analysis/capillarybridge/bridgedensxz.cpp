@@ -25,8 +25,8 @@ BridgeDensityXZ::BridgeDensityXZ(InitialSet initset):Property(initset){
 
 
 void BridgeDensityXZ::getSpecificParameters(){
-    dx=0.05;
-    dz=0.05;
+    dx=0.25;
+    dz=0.25;
     command->getCommandSingleOption("-dx", dx, &dx);
     command->getCommandSingleOption("-dz", dz, &dz);
     

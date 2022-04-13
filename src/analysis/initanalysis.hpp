@@ -29,6 +29,8 @@
 #include "capillarybridge/bridgezdensity.hpp"
 #include "capillarybridge/bridgedensxz.hpp"
 #include "capillarybridge/bridgecline.hpp"
+#include "capillarybridge/bridgeinterface.hpp"
+#include "capillarybridge/bridgegpden.hpp"
 
 #include "polymers/polymersize.hpp"
 #include "polymers/polymereevecrelax.hpp"

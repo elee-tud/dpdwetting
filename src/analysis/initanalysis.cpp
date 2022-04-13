@@ -129,6 +129,12 @@ void InitAnalysis::loadProperty(){
     else if(program==BRIDGECLINE){
         prop=new BridgeCline(initset);
     }
+    else if(program==BRIDGEINTERF){
+        prop=new BridgeInterface(initset);
+    }
+    else if(program==BRIDGEGPDEN){
+        prop=new BridgeGrooveParticleDensity(initset);
+    }
     return;
 }
 

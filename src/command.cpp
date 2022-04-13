@@ -194,6 +194,15 @@ void Command::getProgramOption(){
                 program=BRIDGECLINE;
                 error=false;
             }
+            else if(argv[1].compare("brdginterf")==0){
+                program=BRIDGEINTERF;
+                error=false;
+            }
+            else if(argv[1].compare("brdggpd")==0){
+                program=BRIDGEGPDEN;
+                error=false;
+            }
+
             getCommandOptionAnalysis();
         }
         if(error && mpi->isMaster()){

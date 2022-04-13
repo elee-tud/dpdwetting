@@ -171,6 +171,7 @@ void BridgeSize::calculateStep(int step){
     std::cout << center_x << "," << center_y << "," << phi << "," << width << "," << height << std::endl;
     */
 
+
     for(int i=0;i<4;i++){
         PolynomFit polfit(pmorder, xinterf[i], yinterf[i]);
         polfit.fit();
@@ -189,7 +190,12 @@ void BridgeSize::calculateStep(int step){
 
 
     }
-
+    /*
+    std::cout << "time=" << step*dt+begstep << std::endl;
+    for(int j=0;j<nfpts;j++){
+        std::cout << yinterf[3][j]  << "    " << xinterf[3][j]<< std::endl;
+    }
+    */
 
 
 
