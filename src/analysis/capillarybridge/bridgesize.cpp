@@ -135,7 +135,7 @@ void BridgeSize::calculateStep(int step){
             }
         }
         //Interface bottom right
-        for(int k=centerxidx;i<numx-1;k++){
+        for(int k=centerxidx;k<numx-1;k++){
             if(botdensity[i][k]>=dcrit && botdensity[i][k+1]<dcrit){
                 xinterf[2][i]=dr*(k+(botdensity[i][k]-dcrit)/(botdensity[i][k]-botdensity[i][k+1]));
                 yinterf[2][i]=surfaceb+(i+0.5)*dz;
@@ -145,7 +145,7 @@ void BridgeSize::calculateStep(int step){
             }
         }
         //Interface top right
-        for(int k=centerxidx;i<numx-1;k++){
+        for(int k=centerxidx;k<numx-1;k++){
             if(topdensity[i][k]>=dcrit && topdensity[i][k+1]<dcrit){
                 xinterf[3][i]=dr*(k+(topdensity[i][k]-dcrit)/(topdensity[i][k]-topdensity[i][k+1]));
                 yinterf[3][i]=surfacet-(i+0.5)*dz;
@@ -171,6 +171,7 @@ void BridgeSize::calculateStep(int step){
     std::cout << center_x << "," << center_y << "," << phi << "," << width << "," << height << std::endl;
     */
 
+
     for(int i=0;i<4;i++){
         PolynomFit polfit(pmorder, xinterf[i], yinterf[i]);
         polfit.fit();
@@ -189,7 +190,12 @@ void BridgeSize::calculateStep(int step){
 
 
     }
-
+    /*
+    std::cout << "time=" << step*dt+begstep << std::endl;
+    for(int j=0;j<nfpts;j++){
+        std::cout << yinterf[3][j]  << "    " << xinterf[3][j]<< std::endl;
+    }
+    */
 
 
 
