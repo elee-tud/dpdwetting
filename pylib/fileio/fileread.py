@@ -1,5 +1,3 @@
-#!/home/elee/programs/Python-3.6.10/bin/python
-
 import numpy as np
 
 def file_to_array(filename, rowlen=-1):

@@ -1,5 +1,3 @@
-#!/home/elee/programs/Python-3.6.10/bin/python
-
 import sys
 
 def get_options(argvs, chars, datatypes, defaults):
