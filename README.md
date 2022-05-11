@@ -8,6 +8,9 @@
 * Email: e.lee@theo.chemie.tu-darmstadt.de                                *
 ***************************************************************************
 
+<Prerequisites>
+1. OpenMPI
+2. Python3
 
 <Installation>
 1. cd build/
