@@ -14,15 +14,14 @@ from dropletmodules.pbc import *
 
 
 
-wallgap=5.0
 unitcell=0.5
-options=['-b', '-w', '-i', '-o', '-x', '-y', '-z', '-gap', '-height', '-width']
-types=['float', 'float', 'str', 'str', 'float', 'float', 'float', 'float', 'float', 'float']
-defaults=[10.0, 5.0, 'nowall.gro', 'wall.gro', 0, 0, 0, 0, 0, 0]
-nbox, wallgap, inname, outname, boxx, boxy, boxz, gap, height, width=getopt(sys.argv, options, types, defaults)
+options=['-b', '-w', '-i', '-o', '-x', '-y', '-z', '-gap', '-height', '-width', '-dir']
+types=['float', 'float', 'str', 'str', 'float', 'float', 'float', 'float', 'float', 'float', 'float']
+defaults=[10.0, 5.0, 'nowall.gro', 'wall.gro', 0, 0, 0, 0, 0, 0, 'xy']
+nbox, wallgap, inname, outname, boxx, boxy, boxz, gap, height, width, direc=getopt(sys.argv, options, types, defaults)
 
 title, topol, box, coord, vel=read_gro(inname)
-newbox=[nbox, nbox, nbox+2*wallgap]
+newbox=[boxx, boxy, boxz+2*wallgap+height]
 if boxx!=0:
     newbox[0]=boxx
 if boxy!=0:
@@ -41,38 +40,52 @@ for i in range(len(coord)):
 last_molnum=topol[-1][0]
 last_atnum=topol[-1][0]
 index=1
+ptclidx=len(coord)+1
+molidx=topol[-1][0]+1
 
-nxsp=int((gap+width)/unitcell)
-nysp=int((gap+width)/unitcell)
+
+numwall=0
+nsp=int((gap+width)/unitcell)
 gapunit=int(gap/unitcell)
+basenzh=3
+botbasez=wallgap-(basenzh-1)*unitcell
+topbasez=wallgap+boxz+height+(basenzh-1)*unitcell
 
+#You have to write the code to add rough pillared walls to the droplet only system
 for i in range(nboxx):
     for j in range(nboxy):
-        if (int(i%nxsp)<gapunit or (j%nysp)<gapunit):
-            nzht=2
+        if nsp==0:
+            nzheight=basenzh
+        elif i%nsp<gapunit or j%nsp<gapunit:
+            nzheight=basenzh
         else:
-            nzht=int(height/unitcell)+2
-        for k in range(nzht):
-            coord.append([i*unitcell, j*unitcell, wallgap-unitcell+k*unitcell])
-            vel.append([0.0, 0.0, 0.0])
-            topol.append([last_molnum+index, "WAL", "S", last_atnum+index])
-            index+=1
-
-
+            nzheight=int(height/unitcell)+basenzh
+        
+        for k in range(nzheight):
+            coord.append([i*unitcell, j*unitcell, botbasez+k*unitcell])
+            vel.append([0,0,0])
+            topol.append([molidx, "WAL", "W", ptclidx])
+            ptclidx+=1
+            molidx+=1
+            numwall+=1
+#Surface at top
 for i in range(nboxx):
     for j in range(nboxy):
-        coord.append([i*unitcell, j*unitcell, newbox[2]-wallgap])
-        vel.append([0.0, 0.0, 0.0])
-        topol.append([last_molnum+index, "WAL", "S", last_atnum+index])
-        index+=1
-for i in range(nboxx):
-    for j in range(nboxy):
-        coord.append([i*unitcell, j*unitcell, newbox[2]-wallgap+unitcell])
-        vel.append([0.0, 0.0, 0.0])
-        topol.append([last_molnum+index, "WAL", "S", last_atnum+index])
-        index+=1
+        if nsp==0:
+            nzheight=basenzh
+        elif i%nsp<gapunit or j%nsp<gapunit:
+            nzheight==basenzh
+        else:
+            nzheight=int(height/unitcell)+basenzh
 
-nbeads_wall=index
+        for k in range(nzheight):
+            coord.append([i*unitcell, j*unitcell, topbasez-k*unitcell])
+            vel.append([0,0,0])
+            topol.append([molidx, "WAL", "W", ptclidx])
+            ptclidx+=1
+            molidx+=1
+            numwall+=1
+
 
 title=title+" after rough wall added"
 write_gro(outname, title, topol, newbox, coord, vel)
