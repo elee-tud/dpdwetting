@@ -75,7 +75,47 @@ basenzh=3
 botbasez=wallgap-(basenzh-1)*unitcell
 topbasez=wallgap+boxz+height+(basenzh-1)*unitcell
 
-if direc=='x':
+#Placing particles of rough surface
+#for pillared surfaces
+if direc=='xy':
+    #Surface at bottom
+    for i in range(nboxx):
+        for j in range(nboxy):
+            if nsp==0:
+                nzheight=basenzh
+            elif i%nsp<gapunit or j%nsp<gapunit:
+                nzheight==basenzh
+            else:
+                nzheight=int(height/unitcell)+basenzh
+            
+            for k in range(nzheight):
+                coord.append([i*unitcell, j*unitcell, botbasez+k*unitcell])
+                vel.append([0,0,0])
+                topol.append([molidx, "WAL", "W", ptclidx])
+                ptclidx+=1
+                molidx+=1
+                numwall+=1
+    #Surface at top
+    for i in range(nboxx):
+        for j in range(nboxy):
+            if nsp==0:
+                nzheight=basenzh
+            elif i%nsp<gapunit or j%nsp<gapunit:
+                nzheight==basenzh
+            else:
+                nzheight=int(height/unitcell)+basenzh
+
+            for k in range(nzheight):
+                coord.append([i*unitcell, j*unitcell, topbasez-k*unitcell])
+                vel.append([0,0,0])
+                topol.append([molidx, "RAL", "W", ptclidx])
+                ptclidx+=1
+                molidx+=1
+                numwall+=1
+
+
+#for x-striped surfaces
+elif direc=='x':
     for i in range(nboxx):
         if nsp==0:
             nzheight=basenzh
@@ -105,6 +145,7 @@ if direc=='x':
                 topol.append([molidx, "RAL", "W", ptclidx])
                 ptclidx+=1
                 molidx+=1
+#for y-striped surfaces
 elif direc=='y':
     for i in range(nboxy):
         if i%nsp<gapunit:
