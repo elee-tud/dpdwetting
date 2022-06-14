@@ -9,8 +9,8 @@ import sys
 import numpy as np
 from iocontrol.options import get_options as getopt
 import random as rd
-from dropletmodules.coordinate import *
-from dropletmodules.pbc import *
+from init_generation.coordinate import *
+from init_generation.pbc import *
 
 
 

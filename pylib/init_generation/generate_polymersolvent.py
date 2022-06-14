@@ -11,9 +11,9 @@ sys.path.append("../")
 import numpy as np
 from iocontrol.options import get_options as getopt
 import random as rd
-from dropletmodules.coordinate import *
-from dropletmodules.polymer_random_walk import *
-from dropletmodules.pbc import *
+from init_generation.coordinate import *
+from init_generation.polymer_random_walk import *
+from init_generation.pbc import *
 from ring.ringconfiguration import *
 
 temp=1.0
