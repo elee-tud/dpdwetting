@@ -41,21 +41,23 @@ for c in coord1:
     center1=[center1[i]+c[i] for i in range(3)]
 center1=[center1[i]/len(coord1) for i in range(3)]
 cbox1=[box1[i]/2 for i in range(3)]
-diff1=[center1[i]-box1[i] for i in range(3)]
+diff1=[center1[i]-cbox1[i] for i in range(3)]
+print(center1, diff1)
 ncoord1=[]
 for idx, c in enumerate(coord1):
-    ncoord1.append([c[0]-diff1[0], c[1]-diff1[1], c[2]-diff1[2]+half_spacing])
+    ncoord1.append([(c[0]-diff1[0])%box1[0], (c[1]-diff1[1])%box1[1], (c[2]-diff1[2]+half_spacing)%box1[2]])
 
 
 center2=[0., 0., 0.]
 for c in coord2:
-    center1=[center2[i]+c[i] for i in range(3)]
+    center2=[center2[i]+c[i] for i in range(3)]
 center2=[center2[i]/len(coord2) for i in range(3)]
 cbox2=[box2[i]/2 for i in range(3)]
-diff2=[center2[i]-box2[i] for i in range(3)]
+diff2=[center2[i]-cbox2[i] for i in range(3)]
+print(center2, diff2)
 ncoord2=[]
 for idx, c in enumerate(coord2):
-    ncoord2.append([c[0]-diff1[0]+box1[0], c[1]-diff1[1], c[2]-diff1[2]-half_spacing])
+    ncoord2.append([(c[0]-diff2[0])%box2[0]+box1[0], (c[1]-diff2[1])%box2[1], (c[2]-diff2[2]-half_spacing)%box2[2]])
 
 for idx in range(len(vel1)):
     vel1[idx][0]=vel1[idx][0]+half_impvel
