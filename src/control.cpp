@@ -72,6 +72,9 @@ void Control::setDefaults(){
     ssk=0.;
     sspoltype=LINEARSS;
     intrassbias=0.;
+
+
+    tempannrate=0.;
     return;
 }
 
@@ -94,6 +97,9 @@ void Control::readControl(){
 
                 if(tokens[0].compare("temperature")==0)
                     temperature=std::stod(tokens[1]);
+
+                else if(tokens[0].compare("tempanneal")==0)
+                    tempannrate=std::stod(tokens[1]);
 
                 else if(tokens[0].compare("timestep")==0)
                     dt=std::stod(tokens[1]);
@@ -452,6 +458,7 @@ void Control::setDependency(){
 void Control::bcastControl(){
     MPI_Bcast(&restart, 1, MPI_CXX_BOOL, MASTER, MPI_COMM_WORLD);
     MPI_Bcast(&temperature, 1, MPI_DOUBLE, MASTER, MPI_COMM_WORLD);
+    MPI_Bcast(&tempannrate, 1, MPI_DOUBLE, MASTER, MPI_COMM_WORLD);
     MPI_Bcast(&dt, 1, MPI_DOUBLE, MASTER, MPI_COMM_WORLD);
     MPI_Bcast(&gamma, 1, MPI_DOUBLE, MASTER, MPI_COMM_WORLD);
     MPI_Bcast(&lambda, 1, MPI_DOUBLE, MASTER, MPI_COMM_WORLD);
@@ -607,3 +614,7 @@ bool Control::isWallSheared(){
         return true;
 }
 
+void Control::annealingTemperature(){
+    temperature+=tempannrate*dt;
+    return;
+}
