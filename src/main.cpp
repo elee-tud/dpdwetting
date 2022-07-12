@@ -3,27 +3,29 @@
 /****************************************************************************
  *        Program for Dissipative Particle Dynamics Simulation
  ****************************************************************************
- * Version: v3.1.0 (updated on 10.Mar 2022)
+ * Version: v3.1.2 (updated on 07. 07. 2022)
  * Written by Dr. Eunsang Lee
  * Theoretical Physical Chemistry Dept. TU Darmstadt 
  * Email: e.lee@theo.chemie.tu-darmstadt.de
  ****************************************************************************/
 using namespace dpd;
 int main(int argc, char* argv[]){
-    SetMPI mpi(argc, argv);
-    Command command(argc, argv, &mpi);
+    SetMPI mpi(argc, argv);                 //Setting-up MPI
+    Command command(argc, argv, &mpi);      //Reading command line arguments
+    /*Main module*/
     if(command.getProgram()==RUN){
-        Initialization init(&command);    //Initializing the program
+        Initialization init(&command);      //Initializing the program
         System system(&init);               //Loading a system class
         system.initializeSimulation();      //Initilizing the simulation setup
         system.run();                       //Running a simulation
-        Finalization fin(&init, &system);
+        Finalization fin(&init, &system);   //Finalization
     }
+    /*Analysis module*/
     else{
-        InitAnalysis init(&command);
-        Calculation calc(&init);
+        InitAnalysis init(&command);        //Initializing the analysis program
+        Calculation calc(&init);            //Calculation
     }
-    mpi.finalize();
+    mpi.finalize();                         //Finalizing MPI
 	return 0;
 }
 
