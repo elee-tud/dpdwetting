@@ -17,6 +17,7 @@ public:
     int getIndexFrom3DIndex(Ivec& index3d);
     Ivec get3DIndexFromIndex(int index);
     Ivec getIndexInBox(Ivec& index);
+    int getIndexInBox(int index);
     Ivec addIndexToIndex(Ivec& index1, Ivec& index2);
     int addIndexToIndex(int index1, int index2);
     int addIndexToIndex(int index1, Ivec& index2);

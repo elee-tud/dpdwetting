@@ -15,16 +15,36 @@ import random as rd
 from init_generation.coordinate import *
 from init_generation.polymer_random_walk import *
 from init_generation.pbc import *
-from ring.ringconfiguration import *
+from optparse import OptionParser
 
 temp=1.0
 mass=1.0
 rd.seed()
-box=[0.0, 0.0, 0.0]
-options=['-s', '-p', '-l', '-bl', '-b', '-o' , '-r', '-x', '-y', '-z', '-pp', '-ss', '-ps', '-ring']
-types=['int', 'int', 'int', 'float', 'float', 'str', 'float', 'float', 'float', 'float', 'float', 'float', 'float', 'int']
-defaults=[0, 0, 0, 1.0, 10.0, 'conf.gro', 0.2, 0., 0., 0., -40, -40, -40, 0]
-nsol, npol, lpol, bl, boxl, outname, polgenboxratio, boxx, boxy, boxz, pp, ss, ps, isring=getopt(sys.argv, options, types, defaults)
+
+parser=OptionParser()
+parser.add_option("-n", "--total-number", dest="ntot", default=0, type="int", help="Total number of particles in a system")
+parser.add_option("-d", "--polymer-density", dest="pd", default=0., type="float", help="Number density of polymer")
+parser.add_option("-l", "--polymer-length", dest="pl", default=0., type="int", help="The length of a single polymer")
+parser.add_option("-g", "--numpol-gel", dest="npg", default=0., type="int", help="The number of polymers in a gel")
+parser.add_option("-c", "--crosslink-density", dest="ld", default=0., type="float", help="Crosslink density")
+parser.add_option("-b", "--box-size", dest="box", default=0., type="float", help="Box size")
+parser.add_option("-r", "--polymer-ratio", dest="pgbratio", default=0.2, type="float", help="The ratio of the box size that polymer located")
+parser.add_option("-x", "--box-x", dest="boxx", default=0., type="float", help="Box size along x")
+parser.add_option("-y", "--box-y", dest="boxy", default=0., type="float", help="Box size along y")
+parser.add_option("-z", "--box-z", dest="boxz", default=0., type="float", help="Box size along z")
+parser.add_option("-P", "--pol-pol", dest="pp", default=-20, type="float", help="Polymer-polymer attraction strength")
+parser.add_option("-M", "--pol-sol", dest="ps", default=-30, type="float", help="Polymer-solvent attraction strength")
+parser.add_option("-S", "--sol-sol", dest="ss", default=-20, type="float", help="Solvent-solvent atraction strength")
+parser.add_option("-o", "--output", dest="outname", default="conf.gro", help="Output file name", metavar="FILE")
+(opts, args)=parser.parse_args()
+
+ntot, pd, pl, npg, ld, box, pgbratio, boxx, boxy, boxz, pp, ps, ss, outname=opts.ntot, opts.pd, opts.pl, opts.npg, opts.ld, opts.box, opts.pgbratio, opts.boxx, opts.boxy, opts.boxz, opts.pp, opts.ps, opts.ss, opts.outname
+print(ntot)
+"""
+options=['-nt', '-pd', '-pl', '-ng', '-b', '-o' , '-r', '-x', '-y', '-z', '-pp', '-ss', '-ps'] 
+types=['int', 'int', 'int', 'int', 'float', 'float', 'str', 'float', 'float', 'float', 'float', 'float', 'float', 'float']
+defaults=[0, 0, 0, 1.0, 10.0, 'conf.gro', 0.2, 0., 0., 0., -40, -40, -40]
+nsol, npol, lpol, bl, boxl, outname, polgenboxratio, boxx, boxy, boxz, pp, ss, ps=getopt(sys.argv, options, types, defaults)
 if not boxx==0.:
     box=np.array([boxx, boxy, boxz])
 else:
@@ -43,12 +63,6 @@ for i in range(npol):
         topol.append([molidx, 'POL', 'P', ptclidx])
         vel.append(np.random.normal(0.0, temp/mass, 3))
         ptclidx+=1
-    if isring==0:
-        polcoord=rdpolymer(lpol, bl, polgenbox)
-        for pc in polcoord:
-            pc[0]+=polgenmin[0]
-            pc[1]+=polgenmin[1]
-            pc[2]+=polgenmin[2]
     else:
         polcoord=doublefolded(lpol, bl, box, polgenboxratio)
     coord+=polcoord
@@ -116,4 +130,4 @@ if lpol>1:
     topolfp.write("%10s%10.2f%10.3f\n"%("PP", 300.0, 0.65))
 topolfp.close()
 
-
+"""
