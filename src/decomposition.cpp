@@ -19,7 +19,7 @@ Decomposition::Decomposition(Control* control, Configuration* config, SetMPI* mp
 
 
 
-    pbc=PeriodicBoundary(box);
+    pbc=new PeriodicBoundary(box);
     err=Error(mpi);
 
     calculateDomainDivisor();
@@ -66,7 +66,7 @@ Decomposition::Decomposition(Control* control, Configuration* config, SetMPI* mp
 
 
 
-    pbc=PeriodicBoundary(box);
+    pbc=new PeriodicBoundary(box);
     err=Error(mpi);
 
     myid=0;
@@ -111,7 +111,7 @@ Decomposition::Decomposition(Control* control, Configuration* config, SetMPI* mp
 
 
 
-    pbc=PeriodicBoundary(box);
+    pbc=new PeriodicBoundary(box);
     err=Error(mpi);
 
     calculateDomainDivisor();
@@ -408,12 +408,17 @@ void Decomposition::refreshDomainBeads(){
         ptcls_to_send[i].reserve(maxnbeads);
     }
 
+//    std::cout << particles[47704]->coord << std::scientific << std::endl;
     for(int i=0;i<totnum_cells;i++){
         if(!cells[i]->isGhostCell()){
+//            std::cout << 0 << std::flush;
             Ivec beads=cells[i]->getBeads();
+//            std::cout << 1<< std::flush;
 
             int sendsize=beads.size();
             for(int j=0;j<sendsize;j++){
+                /*It was found that this function causes segmentation fault with wrong destinationn newindex[0]
+                 * See function getNewDomainCellIndex(Particle*)*/
                 Ivec newindex=getNewDomainCellIndex(particles[beads[j]]);
                 if(newindex[0]!=myid){
                     ptcls_to_send[newindex[0]].push_back(beads[j]);
@@ -429,6 +434,8 @@ void Decomposition::refreshDomainBeads(){
                         
                 }
             }
+//            std::cout << 2<< std::flush;
+//            std::cout << std::endl<< std::flush;
         }
     }
     for(int i=0;i<numprocs;i++){
@@ -454,38 +461,6 @@ void Decomposition::refreshDomainBeads(){
             }
         }
     }
-    /*
-    for(int i=0;i<numprocs;i++){
-        if(mpi->rank()!=i){
-            int sendsize=ptcls_to_send[i].size();
-            MPI_Send(&sendsize, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
-            if(sendsize>0){
-                MPI_Send(&ptcls_to_send[i][0], sendsize, MPI_INT, i, 1, MPI_COMM_WORLD);
-                Rvec sendcoord=serializeNCoords(ptcls_to_send[i], particles);
-                Rvec sendveloc=serializeNVelocs(ptcls_to_send[i], particles);
-                MPI_Send(&sendcoord[0], 3*sendsize, MPI_DOUBLE, i, 2, MPI_COMM_WORLD);
-                MPI_Send(&sendveloc[0], 3*sendsize, MPI_DOUBLE, i, 3, MPI_COMM_WORLD);
-            }
-            int recvsize=0;
-            MPI_Recv(&recvsize, 1, MPI_INT, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-            if(recvsize>0){
-                Ivec recvbeads(recvsize);
-                Rvec recvcoord(3*recvsize);
-                Rvec recvveloc(3*recvsize);
-                MPI_Recv(&recvbeads[0], recvsize, MPI_INT, i, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-                MPI_Recv(&recvcoord[0], 3*recvsize, MPI_DOUBLE, i, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-                MPI_Recv(&recvveloc[0], 3*recvsize, MPI_DOUBLE, i, 3, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-                deserializeNCoords(recvbeads, particles, recvcoord);
-                deserializeNVelocs(recvbeads, particles, recvveloc);
-                for(int j=0;j<recvsize;j++){
-                    int newcellidx=getNewCellIndex(particles[recvbeads[j]]);
-                    cells[newcellidx]->addBeads(recvbeads[j]);
-                    addBeads(recvbeads[j]);
-                }
-            }
-        }
-    }
-    */
     MPI_Barrier(MPI_COMM_WORLD);
     return;
 }
@@ -516,7 +491,7 @@ void Decomposition::assignParticleType(){
 
 int Decomposition::getNewCellIndex(Particle* ptcl){
     Ivec cellidx(3,0);
-    ptcl->setCoord(pbc.getVectorIntoBox(ptcl->coord));
+    ptcl->setCoord(pbc->getVectorIntoBox(ptcl->coord));
     cellidx[0]=static_cast<int>(ptcl->getCoord()[0]/cell_length[0]);
     cellidx[1]=static_cast<int>(ptcl->getCoord()[1]/cell_length[1]);
     cellidx[2]=static_cast<int>(ptcl->getCoord()[2]/cell_length[2]);
@@ -529,7 +504,7 @@ int Decomposition::getNewCellIndex(Particle* ptcl){
 int Decomposition::getNewDomainIndex(Particle* ptcl){
     Ivec domainidx(3,0);
 //    Real3D prevcoord=ptcl->coord;
-    ptcl->setCoord(pbc.getVectorIntoBox(ptcl->coord));
+    ptcl->setCoord(pbc->getVectorIntoBox(ptcl->coord));
     domainidx[0]=static_cast<int>(ptcl->getCoord()[0]/cell_length[0]);
     domainidx[1]=static_cast<int>(ptcl->getCoord()[1]/cell_length[1]);
     domainidx[2]=static_cast<int>(ptcl->getCoord()[2]/cell_length[2]);
@@ -545,8 +520,10 @@ int Decomposition::getNewDomainIndex(Particle* ptcl){
 Ivec Decomposition::getNewDomainCellIndex(Particle* ptcl){
     Ivec cellidx(3,0);
     Ivec domainidx(3,0);
-//    Real3D prevcoord=ptcl->coord;
-    ptcl->setCoord(pbc.getVectorIntoBox(ptcl->coord));
+    /*Here, sometimes, new coordinate is not properly calculated. The reason has not been found, but if the particle is 
+     * once more brought into the box in the PerioidicBoundary::getVectorIntoBox(const Real3D&), the problem is gone.
+     * The reason is stil under investigation*/
+    ptcl->setCoord(pbc->getVectorIntoBox(ptcl->coord));
     cellidx[0]=static_cast<int>(ptcl->getCoord()[0]/cell_length[0]);
     cellidx[1]=static_cast<int>(ptcl->getCoord()[1]/cell_length[1]);
     cellidx[2]=static_cast<int>(ptcl->getCoord()[2]/cell_length[2]);
@@ -556,9 +533,34 @@ Ivec Decomposition::getNewDomainCellIndex(Particle* ptcl){
     cellidx[0]=cellidx[0]%num_true_cells[0]+1;
     cellidx[1]=cellidx[1]%num_true_cells[1]+1;
     cellidx[2]=cellidx[2]%num_true_cells[2]+1;
+    Ivec result={indexing_domain.getIndexFrom3DIndex(domainidx), indexing_cell.getIndexFrom3DIndex(cellidx)};
+    return result;
+}
+
+Ivec Decomposition::getNewDomainCellIndexTest(Particle* ptcl){
+    Ivec cellidx(3,0);
+    Ivec domainidx(3,0);
+//    Real3D prevcoord=ptcl->coord;
+    std::cout << ptcl->coord << std::endl;
+    std::cout << pbc->getVectorIntoBox(ptcl->coord) << std::endl;
+    ptcl->setCoord(pbc->getVectorIntoBox(ptcl->coord));
+    std::cout << ptcl->coord << std::endl;
+    cellidx[0]=static_cast<int>(ptcl->getCoord()[0]/cell_length[0]);
+    cellidx[1]=static_cast<int>(ptcl->getCoord()[1]/cell_length[1]);
+    cellidx[2]=static_cast<int>(ptcl->getCoord()[2]/cell_length[2]);
+    std::cout << cellidx << std::endl;
+    domainidx[0]=cellidx[0]/num_true_cells[0];
+    domainidx[1]=cellidx[1]/num_true_cells[1];
+    domainidx[2]=cellidx[2]/num_true_cells[2];
+    std::cout << domainidx << std::endl;
+    cellidx[0]=cellidx[0]%num_true_cells[0]+1;
+    cellidx[1]=cellidx[1]%num_true_cells[1]+1;
+    cellidx[2]=cellidx[2]%num_true_cells[2]+1;
+    std::cout << cellidx << std::endl;
 //    if(indexing_domain.getIndexFrom3DIndex(domainidx)>numprocs){
 //        std::cout <<"prev_coord=" << prevcoord << "after=" <<  ptcl->coord << "," << indexing_domain.getIndexFrom3DIndex(domainidx) << std::flush << std::endl;
 //    }
+    std::cout << indexing_domain.getIndexFrom3DIndex(domainidx) << "," <<  indexing_cell.getIndexFrom3DIndex(cellidx) << std::endl;
     Ivec result={indexing_domain.getIndexFrom3DIndex(domainidx), indexing_cell.getIndexFrom3DIndex(cellidx)};
     return result;
 }
@@ -884,7 +886,7 @@ void Decomposition::resetBox(Real3D newbox){
     box=newbox;
     config->setBox(box);
 
-    pbc.resetBoxSize(box);
+    pbc->resetBoxSize(box);
     calculateDomainLength();
 //    printDomainLengthInformation();
     bool resetcell=calculateCellLength();

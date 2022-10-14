@@ -95,13 +95,20 @@ Ivec PeriodicBoundary::isCrossingBox(const Real3D& pos1, const Real3D& pos2){
 real PeriodicBoundary::getVectorComponentIntoBox(const real& value, int i) const{
     real out=value;
     if(out>=box[i]){
-        while(out>=box[i])
+        while(out>=box[i]){
             out-=box[i];
+        }
     }
     else if(out<0.0){
-        while(out<0.0)
+        while(out<0.0){
             out+=box[i];
+        }
     }
+    /*Here, the particle is brought into the box once more.*/
+    if(out>=box[i])
+        out-=box[i];
+    else if(out<0.0)
+        out+=box[i];
     return out;
 }
 
