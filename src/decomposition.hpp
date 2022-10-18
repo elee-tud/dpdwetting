@@ -28,7 +28,7 @@ private:
     Configuration* config;
 
 
-    PeriodicBoundary* pbc;       //Periodic boundary 
+    PeriodicBoundary pbc;       //Periodic boundary 
     ParticleList particles;     //List of particle pointers
     Error err;                  //Error handling
     Indexing indexing_domain;   //Indexing class for domain decomposition

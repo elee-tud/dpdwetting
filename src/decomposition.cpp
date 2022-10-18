@@ -19,7 +19,7 @@ Decomposition::Decomposition(Control* control, Configuration* config, SetMPI* mp
 
 
 
-    pbc=new PeriodicBoundary(box);
+    pbc=PeriodicBoundary(box);
     err=Error(mpi);
 
     calculateDomainDivisor();
@@ -66,7 +66,7 @@ Decomposition::Decomposition(Control* control, Configuration* config, SetMPI* mp
 
 
 
-    pbc=new PeriodicBoundary(box);
+    pbc=PeriodicBoundary(box);
     err=Error(mpi);
 
     myid=0;
@@ -111,7 +111,7 @@ Decomposition::Decomposition(Control* control, Configuration* config, SetMPI* mp
 
 
 
-    pbc=new PeriodicBoundary(box);
+    pbc=PeriodicBoundary(box);
     err=Error(mpi);
 
     calculateDomainDivisor();
@@ -491,7 +491,7 @@ void Decomposition::assignParticleType(){
 
 int Decomposition::getNewCellIndex(Particle* ptcl){
     Ivec cellidx(3,0);
-    ptcl->setCoord(pbc->getVectorIntoBox(ptcl->coord));
+    ptcl->setCoord(pbc.getVectorIntoBox(ptcl->coord));
     cellidx[0]=static_cast<int>(ptcl->getCoord()[0]/cell_length[0]);
     cellidx[1]=static_cast<int>(ptcl->getCoord()[1]/cell_length[1]);
     cellidx[2]=static_cast<int>(ptcl->getCoord()[2]/cell_length[2]);
@@ -504,7 +504,7 @@ int Decomposition::getNewCellIndex(Particle* ptcl){
 int Decomposition::getNewDomainIndex(Particle* ptcl){
     Ivec domainidx(3,0);
 //    Real3D prevcoord=ptcl->coord;
-    ptcl->setCoord(pbc->getVectorIntoBox(ptcl->coord));
+    ptcl->setCoord(pbc.getVectorIntoBox(ptcl->coord));
     domainidx[0]=static_cast<int>(ptcl->getCoord()[0]/cell_length[0]);
     domainidx[1]=static_cast<int>(ptcl->getCoord()[1]/cell_length[1]);
     domainidx[2]=static_cast<int>(ptcl->getCoord()[2]/cell_length[2]);
@@ -523,7 +523,7 @@ Ivec Decomposition::getNewDomainCellIndex(Particle* ptcl){
     /*Here, sometimes, new coordinate is not properly calculated. The reason has not been found, but if the particle is 
      * once more brought into the box in the PerioidicBoundary::getVectorIntoBox(const Real3D&), the problem is gone.
      * The reason is stil under investigation*/
-    ptcl->setCoord(pbc->getVectorIntoBox(ptcl->coord));
+    ptcl->setCoord(pbc.getVectorIntoBox(ptcl->coord));
     cellidx[0]=static_cast<int>(ptcl->getCoord()[0]/cell_length[0]);
     cellidx[1]=static_cast<int>(ptcl->getCoord()[1]/cell_length[1]);
     cellidx[2]=static_cast<int>(ptcl->getCoord()[2]/cell_length[2]);
@@ -542,8 +542,8 @@ Ivec Decomposition::getNewDomainCellIndexTest(Particle* ptcl){
     Ivec domainidx(3,0);
 //    Real3D prevcoord=ptcl->coord;
     std::cout << ptcl->coord << std::endl;
-    std::cout << pbc->getVectorIntoBox(ptcl->coord) << std::endl;
-    ptcl->setCoord(pbc->getVectorIntoBox(ptcl->coord));
+    std::cout << pbc.getVectorIntoBox(ptcl->coord) << std::endl;
+    ptcl->setCoord(pbc.getVectorIntoBox(ptcl->coord));
     std::cout << ptcl->coord << std::endl;
     cellidx[0]=static_cast<int>(ptcl->getCoord()[0]/cell_length[0]);
     cellidx[1]=static_cast<int>(ptcl->getCoord()[1]/cell_length[1]);
@@ -886,7 +886,7 @@ void Decomposition::resetBox(Real3D newbox){
     box=newbox;
     config->setBox(box);
 
-    pbc->resetBoxSize(box);
+    pbc.resetBoxSize(box);
     calculateDomainLength();
 //    printDomainLengthInformation();
     bool resetcell=calculateCellLength();
