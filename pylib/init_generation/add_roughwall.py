@@ -85,20 +85,12 @@ for i in range(nboxx):
 #Surface at top
 for i in range(nboxx):
     for j in range(nboxy):
-        if nsp==0:
-            nzheight=basenzh
-        elif i%nsp<gapunit or j%nsp<gapunit:
-            nzheight==basenzh
-        else:
-            nzheight=int(height/unitcell)+basenzh
-
-        for k in range(nzheight):
-            coord.append([i*unitcell, j*unitcell, topbasez-k*unitcell])
-            vel.append([0,0,0])
-            topol.append([molidx, "WAL", "W", ptclidx])
-            ptclidx+=1
-            molidx+=1
-            numwall+=1
+        coord.append([i*unitcell, j*unitcell, topbasez])
+        vel.append([0,0,0])
+        topol.append([molidx, "WAL", "W", ptclidx])
+        ptclidx+=1
+        molidx+=1
+        numwall+=1
 
 
 title=title+" after rough wall added"
