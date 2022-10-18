@@ -25,6 +25,7 @@ OBJS := $(SRCS:%.cpp=$(OBJDIR)/%.o)
 
 
 $(OBJDIR)/%.o: %.cpp %.hpp Makefile
+	@mkdir -p $(OBJDIR)
 	@echo "COMPILING SOURSE $< INTO OBJECT $@"
 	$(CC) $(CXXFLAGS) -c $< -o $@
 
@@ -34,18 +35,17 @@ TARGETLIB = $(LIBDIR)/libdpd.a
 
 
 all		: $(TARGET) $(TARGETLIB)
-	if [ ! -d $(OBJDIR) ]; then mkdir -p $(OBJDIR); fi
 
 main	: $(TARGET)
 lib		: $(TARGETLIB)
 
 
 $(TARGET)	: $(OBJS) $(HEADS)
-	if [ ! -d $(BINDIR) ]; then mkdir -p $(BINDIR); fi
+	@mkdir -p $(BINDIR)
 	$(CC) -o $(TARGET) $(OBJS) -I$(INC) -L$(LIB) $(CFLAGS) -lm 
 
 $(TARGETLIB)	: $(OBJS) $(HEADS)
-	if [ ! -d $(LIBDIR) ]; then mkdir -p $(LIBDIR); fi
+	@mkdir -p $(LIBDIR)
 	ar rcu $@ $+
 	ranlib $@
 

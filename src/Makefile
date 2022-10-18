@@ -1,4 +1,4 @@
-OBJDIR	= ../build
+OBJDIR	= ../
 
 all:
 	cd $(OBJDIR) && make -j

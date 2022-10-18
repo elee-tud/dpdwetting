@@ -125,7 +125,6 @@ public:
     int getNewCellIndex(Particle* ptcl);
     int getNewDomainIndex(Particle* ptcl);
     Ivec getNewDomainCellIndex(Particle* ptcl);
-    Ivec getNewDomainCellIndexTest(Particle* ptcl);
     void matchGhostsRealBeads();
 //    Ivec2D findProcsOfGhosts(){ return ghosts; }
 //    Ivec2D findProcsOfRealBeads(){ return realbeads; }
