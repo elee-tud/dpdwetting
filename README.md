@@ -8,14 +8,7 @@
 * Email: e.lee@theo.chemie.tu-darmstadt.de                                *
 ***************************************************************************
 
-<Prerequisites>
-1. OpenMPI
-2. Python3
-
-<Installation>
-1. cd build/
-2. make
 
 
-<Usage>
-mpirun -np [number of cores] dpd [program option]
+https://user-images.githubusercontent.com/89072203/171843370-6600cfb9-d00c-4a4f-b338-2e8adbce28d8.mov
+

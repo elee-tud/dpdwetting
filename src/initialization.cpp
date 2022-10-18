@@ -5,31 +5,31 @@ using namespace dpd;
 Initialization::Initialization(Command* command):command(command){
     /*Creating instances of initializing components*/
     mpi=command->getMPI();
-    control=new Control(command, mpi);
-    control->setDefaults();
-    control->readControl();
-    control->setDependency();
-    control->bcastControl();
+    control=new Control(command, mpi);      
+    control->setDefaults();             /*Setting-up default values for control variables*/
+    control->readControl();             /*Getting control variables*/
+    control->setDependency();           /*Resolving dependency of control variables*/
+    control->bcastControl();            /*Broadcasting control variables*/
     topol=new Topology(command, control, mpi);
-    topol->readTopology();
-    topol->bcastTopology();
-    topol->bcastMolecules();
-    topol->buildTopology();
-    topol->checkDependency();
-    topol->printSystemInformation();
+    topol->readTopology();              /*Reading topology*/
+    topol->bcastTopology();             /*Broadcasting general topology*/
+    topol->bcastMolecules();            /*Broadcasting molecule information*/
+    topol->buildTopology();             /*Building molecule topology*/
+    topol->checkDependency();           /*Checking topology dependency*/
+    topol->printSystemInformation();    /*Printing out system information*/
     config=new Configuration(topol, mpi);
-    config->readConfiguration();
-    config->bcastConfiguration();
-    decomp=new Decomposition(control, config, mpi);
+    config->readConfiguration();        /*Reading initial configuration*/
+    config->bcastConfiguration();       /*Broadcasting initial configuration*/
+    decomp=new Decomposition(control, config, mpi);     /*Domain decomposition*/
     
     if(control->slipSpring()){
-        sspring=new SlipSpring(control, topol, config, decomp);
+        sspring=new SlipSpring(control, topol, config, decomp);     /*Setting-up slip springs*/
     }
 
-    interactions=new Interactions(control, topol, config, decomp);
-    timer=new Timer(mpi->rank(), control->getTotalSteps());
+    interactions=new Interactions(control, topol, config, decomp);  /*Setting-up interactions*/
+    timer=new Timer(mpi->rank(), control->getTotalSteps());         /*Setting-up timer*/
     MPI_Barrier(MPI_COMM_WORLD);
-    restart=new Restart(command, config, topol, decomp, mpi);
+    restart=new Restart(command, config, topol, decomp, mpi);       /*Reading restart*/
 
 }
 

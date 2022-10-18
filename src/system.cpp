@@ -104,6 +104,9 @@ void System::initializeSimulation(){
         dump->dumpLog(0,0, timer->getRemainingTime());
     }
     if(mpi->rank()==0){
+        std::cout << " Temperature set to T= "<< control->getTemperature()<<std::endl; ;
+        if(control->getTempAnnealRate()!=0.)
+            std::cout << " Temperature annealed with the rate "<< control->getTempAnnealRate()<<std::endl;
         std::cout << " Initial system state: T= "<< analysis->getTemperature() ;
         std::cout << ",   P= " << analysis->getPressure();
         std::cout << std::endl<<std::endl;
@@ -161,6 +164,7 @@ void System::run(){
             }
             */
         }
+        control->annealingTemperature();
 
         force->calculateForce();
 //    if(mpi->isMaster()) std::cout << "12"<<std::endl;
