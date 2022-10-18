@@ -31,7 +31,6 @@ Decomposition::Decomposition(Control* control, Configuration* config, SetMPI* mp
     totnum_cells=0;
 
     nbsearch=indexing_domain.buildNeighborSearchVector();
-//    findNeighborProcessors();
     calculateDomainLength();
     printDomainLengthInformation();
     calculateCellLength();
@@ -230,18 +229,6 @@ void Decomposition::allocateBeadsToCells(){
     return;
 }
 
-/*
-void Decomposition::findNeighborProcessors(){
-
-    Ivec neighbor(3,0);
-    for(int i=0;i<nbsearch.size();i++){
-        neighbor=indexing_domain.addIndexToIndex(my3did, nbsearch[i]);
-        neighbor_proc.push_back(indexing_domain.getIndexFrom3DIndex(neighbor));
-    }
-    return;
-}
-
- */   
 
 
 int Decomposition::getNeighborProcessorID(Ivec dist){

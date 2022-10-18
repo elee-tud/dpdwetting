@@ -83,7 +83,6 @@ private:
 
     void calculateDomainDivisor();
     void calculateDomainLength();
-//    void findNeighborProcessors();
     bool calculateCellLength();
     void makeCellLists();
     Ivec getUnfrozenBeads();
