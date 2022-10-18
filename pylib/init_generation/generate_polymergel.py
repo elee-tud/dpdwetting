@@ -55,7 +55,7 @@ def neighbor_list(coordinate, len_pol, distcrit=1.5):
 
 n_tot_ptcls, pol_dens, pol_len, n_pol_gel, cl_dens, boxl, att_pp, att_ps, att_ss, outname, lat_gel_size, distcrit=get_options()
 
-
+#box size#
 box=np.array([boxl, boxl, boxl])
 topol=[]
 coord=[]
