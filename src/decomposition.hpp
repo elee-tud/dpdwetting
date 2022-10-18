@@ -28,7 +28,7 @@ private:
     Configuration* config;
 
 
-    PeriodicBoundary* pbc;       //Periodic boundary 
+    PeriodicBoundary pbc;       //Periodic boundary 
     ParticleList particles;     //List of particle pointers
     Error err;                  //Error handling
     Indexing indexing_domain;   //Indexing class for domain decomposition
@@ -125,7 +125,6 @@ public:
     int getNewCellIndex(Particle* ptcl);
     int getNewDomainIndex(Particle* ptcl);
     Ivec getNewDomainCellIndex(Particle* ptcl);
-    Ivec getNewDomainCellIndexTest(Particle* ptcl);
     void matchGhostsRealBeads();
 //    Ivec2D findProcsOfGhosts(){ return ghosts; }
 //    Ivec2D findProcsOfRealBeads(){ return realbeads; }
