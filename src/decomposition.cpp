@@ -77,7 +77,6 @@ Decomposition::Decomposition(Control* control, Configuration* config, SetMPI* mp
     totnum_cells=0;
 
     nbsearch=indexing_domain.buildNeighborSearchVector();
-//    findNeighborProcessors();
     calculateDomainLength();
     calculateCellLength();
     indexing_cell=Indexing(num_cells);
@@ -121,7 +120,6 @@ Decomposition::Decomposition(Control* control, Configuration* config, SetMPI* mp
     my3did=indexing_domain.get3DIndexFromIndex(myid);
 
     nbsearch=indexing_domain.buildNeighborSearchVector();
-//    findNeighborProcessors();
     calculateDomainLength();
     calculateCellLength();
     indexing_cell=Indexing(num_cells);
