@@ -202,6 +202,10 @@ void Command::getProgramOption(){
                 program=BRIDGEGPDEN;
                 error=false;
             }
+            else if(argv[1].compare("nliqcl")==0){
+                program=NUMCLUSTER;
+                error=false;
+            }
 
             getCommandOptionAnalysis();
         }

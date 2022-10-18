@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/home/elee/.bin/python
 
 #------------------------------------------------------------------------------#
 #  A program to merge two droplets into one simulation box
@@ -67,11 +67,29 @@ for idx in range(len(vel2)):
 coord=ncoord1+ncoord2
 vel=vel1+vel2
 
+
 for i in range(len(topol2)):
     topol2[i][0]=topol2[i][0]+topol1[-1][0]
     topol2[i][3]=topol2[i][3]+topol1[-1][3]
 
 topol=topol1+topol2
+fcoord=[]
+fvel=[]
+ftopol=[]
+
+for i in range(len(topol)):
+    if topol[i][2].replace(" ", "")=="P":
+        fcoord.append(coord[i])
+        fvel.append(vel[i])
+        ftopol.append(topol[i])
+
+for i in range(len(topol)):
+    if topol[i][2].replace(" ", "")=="S":
+        fcoord.append(coord[i])
+        fvel.append(vel[i])
+        ftopol.append(topol[i])
+
+
 
 title="Conformation of two dorplets"
-write_gro(outname, title, topol, box, coord, vel)
+write_gro(outname, title, ftopol, box, fcoord, fvel)

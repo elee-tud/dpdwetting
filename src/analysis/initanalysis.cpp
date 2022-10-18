@@ -135,6 +135,9 @@ void InitAnalysis::loadProperty(){
     else if(program==BRIDGEGPDEN){
         prop=new BridgeGrooveParticleDensity(initset);
     }
+    else if(program==NUMCLUSTER){
+        prop=new NumberOfLiquidClusters(initset);
+    }
     return;
 }
 

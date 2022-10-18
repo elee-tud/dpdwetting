@@ -81,6 +81,7 @@ int sign(T val){
 #define BRIDGECLINE 36
 #define BRIDGEINTERF 37
 #define BRIDGEGPDEN 38
+#define NUMCLUSTER 39
 
 #define TRUEPTCL 0
 #define GHOSTPTCL 1

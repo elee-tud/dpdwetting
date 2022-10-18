@@ -15,6 +15,7 @@
 #include "droplet/polymeradsorption.hpp"
 #include "droplet/surfacecoverage.hpp"
 #include "droplet/polymerstretch.hpp"
+#include "droplet/numliquidclusters.hpp"
 
 #include "capillarybridge/bridgesize.hpp"
 #include "capillarybridge/bridgevelocity.hpp"

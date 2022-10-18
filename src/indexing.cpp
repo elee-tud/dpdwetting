@@ -35,6 +35,11 @@ Ivec Indexing::getIndexInBox(Ivec& index){
 }
 
     
+int Indexing::getIndexInBox(int index){
+    Ivec index3d=get3DIndexFromIndex(index);
+    index3d=getIndexInBox(index3d);
+    return getIndexFrom3DIndex(index3d);
+}
 
 
 
