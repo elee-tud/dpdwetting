@@ -8,19 +8,31 @@
 import sys
 sys.path.append('../')
 import numpy as np
-from iocontrol.options import get_options as getopt
 import random as rd
 from coordinate import *
 from pbc import *
 from optparse import OptionParser
 
+def get_options():
+    parser=OptionParser()
+    parser.add_option("-i", "--input", dest="input", default='nowall.gro', type="str", help="Input file")
+    parser.add_option("-o", "--output", dest="output", default='conf.gro', type="str", help="Output file")
+    parser.add_option("-x", "--box-size-x", dest="boxx", default=0, type="float", help="New box size along x")
+    parser.add_option("-y", "--box-size-y", dest="boxy", default=0, type="float", help="New box size along y")
+    parser.add_option("-z", "--box-size-z", dest="boxz", default=0, type="float", help="New box size along z")
+    parser.add_option("-g", "--pillar-gap", dest="gap", default=0, type="float", help="Gap between pillars")
+    parser.add_option("-t", "--height-gap", dest="height", default=0, type="float", help="Height of a pillar")
+    parser.add_option("-w", "--width-gap", dest="width", default=0, type="float", help="Width of a pillar")
+    parser.add_option("-d", "--pillar-direction", dest="direc", default=0, type="str", help="Direction of pillars")
+    (opts, args)=parser.parse_args()
+    return opts.input, opts.output, opts.boxx, opts.boxy, opts.boxz, opts.gap, opts.height, opts.width, opts.direc
+
+inname, outname, boxx, boxy, boxz, gap, height, width, direc=get_options()
+
 
 
 unitcell=0.5
-options=['-b', '-w', '-i', '-o', '-x', '-y', '-z', '-gap', '-height', '-width', '-dir']
-types=['float', 'float', 'str', 'str', 'float', 'float', 'float', 'float', 'float', 'float', 'float']
-defaults=[10.0, 5.0, 'nowall.gro', 'wall.gro', 0, 0, 0, 0, 0, 0, 'xy']
-nbox, wallgap, inname, outname, boxx, boxy, boxz, gap, height, width, direc=getopt(sys.argv, options, types, defaults)
+wallgap=5.0
 
 title, topol, box, coord, vel=read_gro(inname)
 newbox=[boxx, boxy, boxz+2*wallgap+height]

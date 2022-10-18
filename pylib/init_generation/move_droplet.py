@@ -17,7 +17,7 @@ from pbc import *
 def get_options():
     parser=OptionParser()
     parser.add_option("-i", "--input", dest="input", default='before.gro', type="str", help="Input file")
-    parser.add_option("-o", "--output", dest="output", default='centered.gro', type="str", help="Output file")
+    parser.add_option("-o", "--output", dest="output", default='moved.gro', type="str", help="Output file")
     parser.add_option("-v", "--velocity", dest="vel", default=0, type="float", help="New box size")
     (opts, args)=parser.parse_args()
     return opts.input, opts.output, opts.vel
