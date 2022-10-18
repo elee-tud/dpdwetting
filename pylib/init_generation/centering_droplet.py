@@ -6,18 +6,25 @@
 #------------------------------------------------------------------------------#
 
 import sys
+sys.path.append('../')
 import numpy as np
-from iocontrol.options import get_options as getopt
+from optparse import OptionParser
 import random as rd
-from dropletmodules.coordinate import *
-from dropletmodules.pbc import *
+from coordinate import *
+from pbc import *
 
 
 
-options=['-i', '-o', '-b']
-types=['str', 'str', 'float']
-defaults=['before.gro', 'centered.gro', -1.0]
-inname, outname, nbox=getopt(sys.argv, options, types, defaults)
+def get_options():
+    parser=OptionParser()
+    parser.add_option("-i", "--input", dest="input", default='before.gro', type="str", help="Input file")
+    parser.add_option("-o", "--output", dest="output", default='centered.gro', type="str", help="Output file")
+    parser.add_option("-b", "--box size", dest="boxl", default=-1, type="float", help="New box size")
+    (opts, args)=parser.parse_args()
+    return opts.input, opts.output, opts.boxl
+
+inname, outname, nbox=get_options()
+
 title, topol, box, coord, vel=read_gro(inname)
 if nbox==-1.0:
     newbox=box
