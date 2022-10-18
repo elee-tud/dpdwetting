@@ -6,11 +6,13 @@
 #------------------------------------------------------------------------------#
 
 import sys
+sys.path.append('../')
 import numpy as np
 from iocontrol.options import get_options as getopt
 import random as rd
-from init_generation.coordinate import *
-from init_generation.pbc import *
+from coordinate import *
+from pbc import *
+from optparse import OptionParser
 
 
 
