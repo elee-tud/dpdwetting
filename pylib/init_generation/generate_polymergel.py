@@ -11,9 +11,9 @@ sys.path.append('../')
 
 import numpy as np
 import random as rd
-from init_generation.coordinate import write_gro
-from init_generation.polymer_random_walk import rdpolymer
-# from init_generation.pbc import *
+from coordinate import write_gro
+from polymer_random_walk import rdpolymer
+from pbc import *
 from optparse import OptionParser
 import math
 
