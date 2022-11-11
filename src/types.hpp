@@ -43,7 +43,7 @@ int sign(T val){
 }
 
 
-#define RUN 0
+#define RUN 100000
 #define DROPSIZE 1
 #define SPHERICALSTRESS 2
 #define VELOCITY 3

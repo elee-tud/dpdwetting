@@ -1,5 +1,6 @@
 #include "command.hpp"
 #include <cstring>
+#include <algorithm>
 
 using namespace dpd;
 Command::Command(int argc, char* _argv[], SetMPI* _mpi):argc(argc), mpi(_mpi){
@@ -7,13 +8,10 @@ Command::Command(int argc, char* _argv[], SetMPI* _mpi):argc(argc), mpi(_mpi){
     for(int i=0;i<argc;i++){
         argv[i]=std::string(_argv[i]);
     }
-    getProgramOption();
-    printProgramStartingMessage();
-   /*
-   std::string test;
-   getCommandSingleOption(argc, argv, std::string("-a"), std::string("default"), &test);
-   std::cout << "TEST=" << test << std::endl;
-   */
+
+    setAnalysisProgram();       //Assigning the name of program
+    getProgramOption();         //Getting program name
+    printProgramStartingMessage();      
 
 
 }
@@ -28,7 +26,7 @@ void Command::printProgramStartingMessage(){
             std::cout << "*        Program for Analysing DPD trajectory                              "<< std::endl;
         std::cout << "***************************************************************************"<< std::endl;
 
-        std::cout << "* Version: v3.0 (updated on July24  2021)"                                  << std::endl; 
+        std::cout << "* Version: v3.1 (updated on June 2022)"                                  << std::endl; 
         std::cout << "* Written by Dr. Eunsang Lee"                                               << std::endl; 
         std::cout << "* Theoretical Physical Chemistry Dept. TU Darmstadt "                       << std::endl; 
         std::cout << "* Email: e.lee@theo.chemie.tu-darmstadt.de"                                 << std::endl; 
@@ -36,6 +34,56 @@ void Command::printProgramStartingMessage(){
     }
     return;
 }
+
+
+void Command::setAnalysisProgram(){
+    /*Assining the name of program
+     *If you want to add your program, assign the global varialbe for the program in also types.hpp*/
+    analysis_program["run"]=RUN;
+    analysis_program["dropsize"]=DROPSIZE;
+    analysis_program["velocity"]=VELOCITY;
+    analysis_program["sphstress"]=SPHERICALSTRESS;
+    analysis_program["rdensity"]=RADIALDENSITY;
+    analysis_program["avgstress"]=AVGSTRESS;
+    analysis_program["polads"]=POLADSORP;
+    analysis_program["polsize"]=POLSIZE;
+    analysis_program["polevrlx"]=POLEVRLX;
+    analysis_program["polorient"]=POLORIENT;
+    analysis_program["bondlen"]=BONDLENGTH;
+    analysis_program["polstretch"]=POLSTRETCH;
+    analysis_program["trjtogro"]=TRJTOGRO;
+    analysis_program["polsmsf"]=POLSMSF;
+    analysis_program["polsubsize"]=POLSUBSIZE;
+    analysis_program["msd"]=POLMSD;
+    analysis_program["velacf"]=VELACF;
+    analysis_program["surfcov"]=SURFCOV;
+    analysis_program["rdf"]=RDF;
+    analysis_program["depori"]=DEPORIENT;
+    analysis_program["brdgsize"]=BRIDGESIZE;
+    analysis_program["brdgvel"]=BRIDGEVEL;
+    analysis_program["brdgpc"]=BRIDGEPCONC;
+    analysis_program["brdgac"]=BRIDGEADSCONC;
+    analysis_program["brdgclvel"]=BRIDGECLVEL;
+    analysis_program["dropzd"]=DROPZD;
+    analysis_program["surfrdf"]=DROPSRDF;
+    analysis_program["jumpfreq"]=JUMPFREQ;
+    analysis_program["brdgjpf"]=BRIDGEJF;
+    analysis_program["brdgslvel"]=BRIDGESLVEL;
+    analysis_program["brdgvelx"]=BRIDGEVELX;
+    analysis_program["brdgvelxz"]=BRIDGEVELXZ;
+    analysis_program["brdgzd"]=BRIDGEZD;
+    analysis_program["brdgxzd"]=BRIDGEDENSXZ;
+    analysis_program["brdgclin"]=BRIDGECLINE;
+    analysis_program["brdginterf"]=BRIDGEINTERF;
+    analysis_program["brdggpd"]=BRIDGEGPDEN;
+    analysis_program["nliqcl"]=NUMCLUSTER;
+    return;
+}
+
+
+
+
+
 
 void Command::getProgramOption(){
     bool error=true;
@@ -47,227 +95,67 @@ void Command::getProgramOption(){
             MPI_Abort(MPI_COMM_WORLD, 0);
             exit(0);
         }
-        if(argv[1].compare("run")==0){
-            program=RUN;
-            getCommandOption();
-            error=false;
-        }
-        else{
-            if(argv[1].compare("dropsize")==0){
-                program=DROPSIZE;
-                error=false;
-            }
-            else if(argv[1].compare("velocity")==0){
-                program=VELOCITY;
-                error=false;
-            }
-            else if(argv[1].compare("sphstress")==0){
-                program=SPHERICALSTRESS;
-                error=false;
-            }
-            else if(argv[1].compare("rdensity")==0){
-                program=RADIALDENSITY;
-                error=false;
-            }
-
-            else if(argv[1].compare("avgstress")==0){
-                program=AVGSTRESS;
-                error=false;
-            }
-            else if(argv[1].compare("polads")==0){
-                program=POLADSORP;
-                error=false;
-            }
-            else if(argv[1].compare("polsize")==0){
-                program=POLSIZE;
-                error=false;
-            }
-            else if(argv[1].compare("polevrlx")==0){
-                program=POLEVRLX;
-                error=false;
-            }
-            else if(argv[1].compare("polorient")==0){
-                program=POLORIENT;
-                error=false;
-            }
-            else if(argv[1].compare("bondlen")==0){
-                program=BONDLENGTH;
-                error=false;
-            }
-            else if(argv[1].compare("polstretch")==0){
-                program=POLSTRETCH;
-                error=false;
-            }
-            else if(argv[1].compare("trjtogro")==0){
-                program=TRJTOGRO;
-                error=false;
-            }
-            else if(argv[1].compare("polsmsf")==0){
-                program=POLSMSF;
-                error=false;
-            }
-            else if(argv[1].compare("polsubsize")==0){
-                program=POLSUBSIZE;
-                error=false;
-            }
-            else if(argv[1].compare("msd")==0){
-                program=POLMSD;
-                error=false;
-            }
-            else if(argv[1].compare("velacf")==0){
-                program=VELACF;
-                error=false;
-            }
-            else if(argv[1].compare("surfcov")==0){
-                program=SURFCOV;
-                error=false;
-            }
-            else if(argv[1].compare("rdf")==0){
-                program=RDF;
-                error=false;
-            }
-            else if(argv[1].compare("depori")==0){
-                program=DEPORIENT;
-                error=false;
-            }
-            else if(argv[1].compare("brdgsize")==0){
-                program=BRIDGESIZE;
-                error=false;
-            }
-            else if(argv[1].compare("brdgvel")==0){
-                program=BRIDGEVEL;
-                error=false;
-            }
-            else if(argv[1].compare("brdgpc")==0){
-                program=BRIDGEPCONC;
-                error=false;
-            }
-            else if(argv[1].compare("brdgac")==0){
-                program=BRIDGEADSCONC;
-                error=false;
-            }
-            else if(argv[1].compare("brdgclvel")==0){
-                program=BRIDGECLVEL;
-                error=false;
-            }
-            else if(argv[1].compare("dropzd")==0){
-                program=DROPZD;
-                error=false;
-            }
-            else if(argv[1].compare("surfrdf")==0){
-                program=DROPSRDF;
-                error=false;
-            }
-            else if(argv[1].compare("jumpfreq")==0){
-                program=JUMPFREQ;
-                error=false;
-            }
-            else if(argv[1].compare("brdgjpf")==0){
-                program=BRIDGEJF;
-                error=false;
-            }
-            else if(argv[1].compare("brdgslvel")==0){
-                program=BRIDGESLVEL;
-                error=false;
-            }
-            else if(argv[1].compare("brdgvelx")==0){
-                program=BRIDGEVELX;
-                error=false;
-            }
-            else if(argv[1].compare("brdgvelxz")==0){
-                program=BRIDGEVELXZ;
-                error=false;
-            }
-            else if(argv[1].compare("brdgald")==0){
-                program=BRIDGEALDENS;
-                error=false;
-            }
-            else if(argv[1].compare("brdgzd")==0){
-                program=BRIDGEZD;
-                error=false;
-            }
-            else if(argv[1].compare("brdgxzd")==0){
-                program=BRIDGEDENSXZ;
-                error=false;
-            }
-            else if(argv[1].compare("brdgcline")==0){
-                program=BRIDGECLINE;
-                error=false;
-            }
-            else if(argv[1].compare("brdginterf")==0){
-                program=BRIDGEINTERF;
-                error=false;
-            }
-            else if(argv[1].compare("brdggpd")==0){
-                program=BRIDGEGPDEN;
-                error=false;
-            }
-            else if(argv[1].compare("nliqcl")==0){
-                program=NUMCLUSTER;
-                error=false;
-            }
-
-            getCommandOptionAnalysis();
-        }
-        if(error && mpi->isMaster()){
-            std::cout << "program " << argv[1] << " can not be understood." << std::endl;
+        program=analysis_program[argv[1]];
+        if(program==0){
+            std::cout << "[Error] Program " << argv[1] << " can not be understood." << std::endl;
             MPI_Abort(MPI_COMM_WORLD, 1);
             exit(0);
         }
-
+        else if(program==RUN)
+            getCommandOption();
+        else
+            getCommandOptionAnalysis();
 
     }
     MPI_Bcast(&program, 1, MPI_INT, MASTER, MPI_COMM_WORLD);
     return;
 }
 
+
+
+/*Getting options for analysis programs*/
 void Command::getCommandOptionAnalysis(){
     bool given_traj=false;
     bool given_strs=false;
     bool given_frc=false;
-    out_fname="default";
     if(mpi->rank()==MASTER){
-        assignDefaults();
+
+        /*Checking whether unknown option flag is used*/
+        /*
+        Svec keys={"-c", "-o", "-t", "-p", "-i", "-n", "-x", "-f", "-s"};
         for(int i=2; i<argc; i+=2){
-            if(argv[i].compare("-c")==0)
-                config_fname=argv[i+1];
-            else if(argv[i].compare("-o")==0)
-                out_fname=argv[i+1];
-            else if(argv[i].compare("-t")==0)
-                topol_fname=argv[i+1];
-            else if(argv[i].compare("-p")==0)
-                control_fname=argv[i+1];
-            else if(argv[i].compare("-i")==0)
-                out_prefix=argv[i+1];
-            else if(argv[i].compare("-n")==0)
-                ndx_fname=argv[i+1];
-            else if(argv[i].compare("-x")==0){
-                traj_fname=argv[i+1];
-                given_traj=true;
-            }
-            else if(argv[i].compare("-f")==0){
-                frc_fname=argv[i+1];
-                given_frc=true;
-            }
-            else if(argv[i].compare("-s")==0){
-                strs_fname=argv[i+1];
-                given_strs=true;
+            if(std::find(keys.begin(), keys.end(), argv[i])==keys.end()){
+                std::cout << "[Error] The command line option " << argv[i] << " is not understood." << std::endl << std::flush;
+                MPI_Abort(MPI_COMM_WORLD, 11);
+                exit(0);
             }
         }
-        if(out_prefix.compare("default")==0){
-            if(!given_traj)
-                traj_fname="traj.trj";
-            if(!given_strs)
-                strs_fname="stress.frc";
-            if(!given_frc)
-                frc_fname="force.str";
-        }
-        else{
+        */
+
+       
+        /*Reading output prefix*/
+        getCommandSingleOption("-i", "default", &out_prefix);
+        if(out_prefix.compare("default")){
             traj_fname=out_prefix+".trj";
             log_fname=out_prefix+".log";
             strs_fname=out_prefix+".str";
             frc_fname=out_prefix+".frc";
         }
+
+
+        /*Reading specific file names*/
+        getCommandSingleOption("-c", "conf.gro", &config_fname);
+        getCommandSingleOption("-o", "default", &out_fname);
+        getCommandSingleOption("-t", "topol.top", &topol_fname);
+        getCommandSingleOption("-p", "control.in", &control_fname);
+        getCommandSingleOption("-n", "index.ndx", &ndx_fname);
+        getCommandSingleOption("-x", "traj.trj", &traj_fname);
+        getCommandSingleOption("-f", "force.frc", &frc_fname);
+        getCommandSingleOption("-s", "stress.str", &strs_fname);
+
+
+
+
         std::cout << " Initial configuration from "<< config_fname << std::endl;
         std::cout << " Control parameters from "<< control_fname << std::endl;
         std::cout << " Force field from "<< topol_fname << std::endl;
@@ -279,68 +167,33 @@ void Command::getCommandOptionAnalysis(){
 
 
 void Command::getCommandOption(){
-    bool given_traj=false;
-    bool given_strs=false;
-    bool given_frc=false;
-    bool given_ckp=false;
     do_restart=false;
     if(mpi->rank()==MASTER){
-        assignDefaults();
+        
+        /*Checking whether unknown option flag is used*/
+        Svec keys={"-c", "-o", "-t", "-p", "-l", "-x", "-f", "-s", "-r", "-restart", "-ss", "-sg"};
         for(int i=2; i<argc; i+=2){
-            if(argv[i].compare("-c")==0)
-                config_fname=argv[i+1];
-            else if(argv[i].compare("-t")==0)
-                topol_fname=argv[i+1];
-            else if(argv[i].compare("-p")==0)
-                control_fname=argv[i+1];
-            else if(argv[i].compare("-o")==0)
-                out_prefix=argv[i+1];
-            else if(argv[i].compare("-l")==0)
-                log_fname=argv[i+1];
-            else if(argv[i].compare("-x")==0){
-                traj_fname=argv[i+1];
-                given_traj=true;
-            }
-            else if(argv[i].compare("-f")==0){
-                frc_fname=argv[i+1];
-                given_frc=true;
-            }
-            else if(argv[i].compare("-s")==0){
-                strs_fname=argv[i+1];
-                given_strs=true;
-            }
-            else if(argv[i].compare("-r")==0){
-                ckp_fname=argv[i+1];
-                given_ckp=true;
-            }
-            else if(argv[i].compare("-restart")==0){
-                rst_fname=argv[i+1];
-                do_restart=true;
-            }
-            else if(argv[i].compare("-ss")==0){
-                ss_fname=argv[i+1];
-            }
-            else{
-                std::cout << "[Error] The option " << argv[i] << " is not understood." << std::endl << std::flush;
+            if(std::find(keys.begin(), keys.end(), argv[i])==keys.end()){
+                std::cout << "[Error] The command line option " << argv[i] << " is not understood." << std::endl << std::flush;
                 MPI_Abort(MPI_COMM_WORLD, 11);
                 exit(0);
             }
         }
-        if(out_prefix.compare("default")==0){
-            if(!given_traj)
-                traj_fname="traj.trj";
-            if(!given_strs)
-                strs_fname="stress.str";
-            if(!given_frc)
-                frc_fname="force.frc";
-            if(!given_ckp)
-                ckp_fname="check.ckp";
+
+        /*Reading output prefix*/
+        getCommandSingleOption("-o", "default", &out_prefix);
+        
+        if(out_prefix.compare("default")==0){   //As default
+            traj_fname="traj.trj";
+            strs_fname="stress.str";
+            frc_fname="force.frc";
+            ckp_fname="check.ckp";
             log_fname="log.out";
             ss_fname="sslog.out";
             ssgro_fname="sstrj.gro";
             fnconf_fname="final.gro";
         }
-        else{
+        else{               //Otherwise
             traj_fname=out_prefix+".trj";
             log_fname=out_prefix+".log";
             strs_fname=out_prefix+".str";
@@ -350,6 +203,21 @@ void Command::getCommandOption(){
             ss_fname=out_prefix+".sslog";
             ssgro_fname=out_prefix+"_sstrj.gro";
         }
+
+        /*Reading specific file names*/
+
+        getCommandSingleOption("-c", "conf.gro", &config_fname);
+        getCommandSingleOption("-t", "topol.top", &topol_fname);
+        getCommandSingleOption("-p", "control.in", &control_fname);
+        getCommandSingleOption("-l", "log.out", &log_fname);
+        getCommandSingleOption("-x", "traj.trj", &traj_fname);
+        getCommandSingleOption("-f", "force.frc", &frc_fname);
+        getCommandSingleOption("-s", "stress.str", &strs_fname);
+        getCommandSingleOption("-r", "check.ckp", &ckp_fname);
+        getCommandSingleOption("-ss", "sslog.out", &ss_fname);
+        getCommandSingleOption("-sg", "sstrj.gro", &ssgro_fname);
+        do_restart=getCommandSingleOption("-restart", "restart.ckp", &rst_fname);
+
         if(do_restart){
             if(rst_fname.compare(ckp_fname)==0){
                 ckp_fname=ckp_fname+".new";
@@ -364,35 +232,42 @@ void Command::getCommandOption(){
 }
 
 
-void Command::getCommandSingleOption(const char opt[], std::string deflt, std::string *value){
+bool Command::getCommandSingleOption(const char opt[], std::string deflt, std::string *value){
     if(mpi->rank()==MASTER){
         *value=deflt;
         for(int i=2; i<argc; i+=2){
-            if(argv[i].compare(opt)==0)
+            if(argv[i].compare(opt)==0){
                 *value=argv[i+1];
+                return true;
+            }
         }
     }
-    return;
+    return false;
 }
-void Command::getCommandSingleOption(const char opt[], int deflt, int *value){
+bool Command::getCommandSingleOption(const char opt[], int deflt, int *value){
     if(mpi->rank()==MASTER){
         *value=deflt;
         for(int i=2; i<argc; i+=2){
-            if(argv[i].compare(opt)==0)
+            if(argv[i].compare(opt)==0){
                 *value=std::stoi(argv[i+1]);
+                return true;
+            }
+            
         }
     }
-    return;
+    return false;
 }
-void Command::getCommandSingleOption(const char opt[], real deflt, real *value){
+bool Command::getCommandSingleOption(const char opt[], real deflt, real *value){
     if(mpi->rank()==MASTER){
         *value=deflt;
         for(int i=2; i<argc; i+=2){
-            if(argv[i].compare(opt)==0)
+            if(argv[i].compare(opt)==0){
                 *value=std::stod(argv[i+1]);
+                return true;
+            }
         }
     }
-    return;
+    return false;
 }
 
 Command::~Command(){

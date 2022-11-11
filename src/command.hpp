@@ -1,6 +1,5 @@
 /*************************************************************
- *           Class "Command"
- *************************************************************
+ *           Class Command
  *  This class manages basic information from the command line
  * including the kind of module to run, and the input and ouput
  * file names from the flag options. It also contains a function
@@ -13,6 +12,7 @@
 #include "setmpi.hpp"
 #include <string>
 #include <fstream>
+#include <unordered_map>
 
 
 
@@ -51,6 +51,11 @@ protected:
 
     bool do_restart;                /*if the simulation is restart, true*/
 
+    std::unordered_map<std::string, int> analysis_program;  /*Map of the analysis program*/
+    void setAnalysisProgram();
+
+
+
 
 public:
     Command(){}
@@ -60,9 +65,9 @@ public:
     void getProgramOption();            /*Getting the module to run*/
     void getCommandOption();            /*Getting flag options from the command line*/
     void getCommandOptionAnalysis();    /*Getting flag options from the command line for analysis*/
-    void getCommandSingleOption(const char opt[], std::string deflt, std::string *value);   /*Getting a flag (string) option from a command line*/
-    void getCommandSingleOption(const char opt[], int deflt, int *value);   /*Getting a flag (int) option from a command line*/
-    void getCommandSingleOption(const char opt[], real deflt, real *value); /*Getting a flag (float) option from a command line*/
+    bool getCommandSingleOption(const char opt[], std::string deflt, std::string *value);   /*Getting a flag (string) option from a command line*/
+    bool getCommandSingleOption(const char opt[], int deflt, int *value);   /*Getting a flag (int) option from a command line*/
+    bool getCommandSingleOption(const char opt[], real deflt, real *value); /*Getting a flag (float) option from a command line*/
     std::string configuration(){ return config_fname; }
     std::string topology(){ return topol_fname; }
     std::string control(){ return control_fname; }

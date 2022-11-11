@@ -1,0 +1,12 @@
+#!/usr/bin/bash
+##
+
+module load intel/env/2018
+module load openmpi/intel/3.1.1
+CWD=$PWD
+
+BINPATH=$CWD/bin
+PYPATH=$CWD/pylib
+
+export PATH=$PATH:$BINPATH:$PYPATH
+export PYTHONPATH=$PYTHONPATH:$PYPATH 

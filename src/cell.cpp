@@ -12,8 +12,8 @@ Cell::Cell(int myprocid, Ivec num_domains, int mycellid, Ivec num_cells):myproci
     num_original_cells[0]=num_cells[0]-2;
     num_original_cells[1]=num_cells[1]-2;
     num_original_cells[2]=num_cells[2]-2;
-    mycell3did=indexing.get3DIndexFromIndex(mycellid);
-    nbsearch=indexing.buildNeighborSearchVector();
+    mycell3did=indexing.get3DIndexFromIndex(mycellid);  //indexing class of the cell
+    nbsearch=indexing.buildNeighborSearchVector();      //indexing for neighbor search
 
     myproc3did=indexing_domain.get3DIndexFromIndex(myprocid);
     mybeads.reserve(100);
@@ -86,11 +86,11 @@ void Cell::checkCellType(){
 void Cell::checkCellType(Ivec _num_cells){
     is_ghost_cell=false;
     is_real_cell=false;
-    if(mycell3did[0]==0 || mycell3did[1]==0 || mycell3did[2]==0 || mycell3did[0]==_num_cells[0]-1 || mycell3did[1]==_num_cells[1]-1 || mycell3did[2]==_num_cells[2]-1){
+    if(mycell3did[0]==0 || mycell3did[1]==0 || mycell3did[2]==0 || mycell3did[0]==_num_cells[0]-1 || mycell3did[1]==_num_cells[1]-1 || mycell3did[2]==_num_cells[2]-1){     //if the cell is at the first laye from the border of a domain
         is_ghost_cell=true;
     }
     else{
-        if(mycell3did[0]==1 || mycell3did[1]==1 || mycell3did[2]==1 || mycell3did[0]==_num_cells[0]-2 || mycell3did[1]==_num_cells[1]-2 || mycell3did[2]==_num_cells[2]-2)
+        if(mycell3did[0]==1 || mycell3did[1]==1 || mycell3did[2]==1 || mycell3did[0]==_num_cells[0]-2 || mycell3did[1]==_num_cells[1]-2 || mycell3did[2]==_num_cells[2]-2)  //if the cell is at the second layer from the border of a domain
             is_real_cell=true;
     }
     return;
@@ -124,12 +124,8 @@ void Cell::findRealCellOfGhost(){
         else
             realcellid[i]=mycell3did[i];
     }
-    realcell_index[0]=indexing_domain.addIndexToIndex(myprocid, delta_proc);
-    realcell_index[1]=indexing.getIndexFrom3DIndex(realcellid);
-    /*
-    if(myprocid==4 && realcell_index[0]==0)
-        std::cout << mycell3did << indexing_domain.get3DIndexFromIndex(realcell_index[0]) << realcellid << std::endl;
-        */
+    realcell_index[0]=indexing_domain.addIndexToIndex(myprocid, delta_proc);    //Domain ID which contains its real cell
+    realcell_index[1]=indexing.getIndexFrom3DIndex(realcellid);         //Cell ID of the real cell for this ghost cell
     return;
 }
 
@@ -161,8 +157,7 @@ void Cell::findGhostOfRealCell(){
         }
     }
     for(int i=0;i<nbsearch_back.size();i++){
-//            std::cout << mycellid << std::endl;
-        int ghostproc=indexing_domain.addIndexToIndex(myprocid, nbsearch_back[i]);
+        int ghostproc=indexing_domain.addIndexToIndex(myprocid, nbsearch_back[i]);   //Domain index containing the ghost cell of the current real cell
         Ivec ghostid=mycell3did;
         for(int j=0;j<3;j++){
             if(nbsearch_back[i][j]==1)
@@ -170,19 +165,9 @@ void Cell::findGhostOfRealCell(){
             else if(nbsearch_back[i][j]==-1)
                 ghostid[j]=num_cells[j]-1;
         }
-        int ghostcell=indexing.getIndexFrom3DIndex(ghostid);
-        ghost_index.push_back(Ivec{ghostproc, ghostcell});
+        int ghostcell=indexing.getIndexFrom3DIndex(ghostid);  //Cell index of the ghost cell for the current real cell
+        ghost_index.push_back(Ivec{ghostproc, ghostcell}); //A set of ghost domain/cell information
     }
-    /*
-    if(myprocid==0){
-        std::cout << "myproc=" << myproc3did << ", my cell=" << mycell3did << ": ghost cell =>" ;
-        for(int i=0;i<ghost_index.size();i++){
-            if(ghost_index[i][0]==4)
-            std::cout <<"{"<< indexing_domain.get3DIndexFromIndex(ghost_index[i][0]) <<"," << indexing.get3DIndexFromIndex(ghost_index[i][1]) << "}" ;
-        }
-    std::cout << std::endl;
-    }
-    */
     return;
 }
 
@@ -196,7 +181,7 @@ void Cell::findGhostOfRealCell(){
 void Cell::resetCell(int _mycellid, Ivec _num_cells){
     mycellid=_mycellid;
     num_cells=_num_cells;
-    mybeads.reserve(1000);
+    mybeads.reserve(100);
     clear();
     indexing.reset(num_cells);
     totnum_cells=num_cells[0]*num_cells[1]*num_cells[2];
