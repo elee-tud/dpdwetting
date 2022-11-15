@@ -120,76 +120,58 @@ void System::run(){
 
     int nsteps=control->getTotalSteps();
     for(int i=startstep+1;i<=nsteps;i++){
-//    if(mpi->isMaster()) std::cout << "1"<<std::endl;
+        /*Current time*/
         real time=i*control->getTimeStep();
-//    if(mpi->isMaster()) std::cout << "2"<<std::endl;
+        /*Setting the communication flag unsynced*/
         decomp->setUnsynced();
-//    if(mpi->isMaster()) std::cout << "3"<<std::endl;
+        /*Updating position*/
         integrator->updatePosition(need_prev_position);
-//    if(mpi->isMaster()) std::cout << "4"<<std::endl;
+        /*Applying extensions for position*/
         interaction->applyExtensionForPosition(i);
-//    if(mpi->isMaster()) std::cout << "5"<<std::endl;
+        /*Applying extensions for velocity*/
         integrator->updateVelocity(need_prev_velocity);
-//    if(mpi->isMaster()) std::cout << "6"<<std::endl;
+        /*Refreshing domain bead information*/
         decomp->refreshDomainBeads();
-//    if(mpi->isMaster()) std::cout << "7"<<std::endl;
+        /*Communicating ghost beads*/
         decomp->communicateGhostBeads();
-//    if(mpi->isMaster()) std::cout << "8"<<std::endl;
+        /*Calculting local particle density if multi-body DPD*/
         if(control->getNonbondedInteraction()==NBMDPD) localdensity->calculateLocalDensity();
-//    if(mpi->isMaster()) std::cout << "9"<<std::endl;
-    
-//        if(mpi->isMaster()) std::cout << "t=" << i << std::endl;
-//        if(particles[1]->existsHere()==TRUEPTCL)
-//            std::cout << mpi->rank() << std::endl;
-
-//    if(mpi->isMaster()) std::cout << control->slipSpring() <<"," << control->getNumDPDSeqSteps() <<std::endl;
+        /*Updating slip-springs if slip-spring is activated*/ 
         if(control->slipSpring() && i%control->getNumDPDSeqSteps()==0){
             sspring->relocation();
-//    if(mpi->isMaster()) std::cout << "10"<<std::endl;
             sspring->doMonteCarloSequence(i);
-//    if(mpi->isMaster()) std::cout << "11"<<std::endl;
-            /*
-            if(mpi->isMaster()){
-                ParticleList particles=config->getParticles();
-                int ntotssbonds=0;
-                for(int i=0;i<particles.size();i++){
-                    if(particles[i]->getSSBonds().size()>0){
-                        for(int j=0;j<particles[i]->getSSBonds().size() ;j++){
-                            std::cout << "(" << i << "," << particles[i]->getSSBonds()[j]->getParticleIndex()-1 << ")" << ",";
-                                ntotssbonds++;
-                        }
-                    }
-                }
-                std::cout << std::endl << "Total " << ntotssbonds << std::endl;;
-            }
-            */
         }
+        /*Updating tempearture if the target temperature changes*/
         control->annealingTemperature();
 
+        /*Calculating particle forces*/
         force->calculateForce();
-//    if(mpi->isMaster()) std::cout << "12"<<std::endl;
+        /*Updating velocities*/
         integrator->updateVelocity();
-//    if(mpi->isMaster()) std::cout << "13"<<std::endl;
+        /*Applyting extensions for velocities*/
         interaction->applyExtensionForVelocity(i);
-//    if(mpi->isMaster()) std::cout << "14"<<std::endl;
 
-
+        /*Writing logs*/
         if(i%logfreq==0){
             analysis->calculateSystemProperties();
             dump->dumpLog(i, time, timer->getRemainingTime());
         }
 
+        /*Writing configuration trajectory*/
         if(i%trajfreq==0){
             dump->dumpConf(i, time);
             restart->writeCheckPoint(i, time);
         }
 
+        /*Writing virial*/
         if(strsfreq > 0 && i%strsfreq==0)
             dump->dumpStress(i, time);
 
+        /*Writing force*/
         if(frcfreq > 0 && i%frcfreq==0)
             dump->dumpForce(i, time);
 
+        /*Cheking convergence if the integrator is energy minimization*/
         if(control->getIntegrator()==EMIN){
             timer->printProgressRemainingTime(i, integrator->getMaxForce());
             if(integrator->getMaxForce()<control->getTargetForce()){
@@ -197,6 +179,7 @@ void System::run(){
                 break;
             }
         }
+        /*Printing out the timer on a screen*/
         else
             timer->printProgressRemainingTime(i);
 
