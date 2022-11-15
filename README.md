@@ -2,7 +2,7 @@
 *        Dissipative Particle Dynamics Simulation Software                * 
 *             for Droplets and  Polymer Materials                         * 
 ***************************************************************************
-* Version: v3.1.1 (updated on Oct. 18, 2022)                                  *
+* Version: v221115                                                        *
 * Developed by Dr. Eunsang Lee                                            *
 * Theoretical Physical Chemistry Dept. TU Darmstadt                       *
 * Email: e.lee@theo.chemie.tu-darmstadt.de                                *
