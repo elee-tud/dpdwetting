@@ -591,17 +591,17 @@ void Control::buildShearTensor(){
         sheartensor[4]=flowrate;
         sheartensor[8]=-flowrate/2;
     }
-    if(sheardir=0)
+    if(sheardir==0)
         sheartensor[1]=shearrate;
-    else if(sheardir=1)
+    else if(sheardir==1)
         sheartensor[2]=shearrate;
-    else if(sheardir=2)
+    else if(sheardir==2)
         sheartensor[3]=shearrate;
-    else if(sheardir=3)
+    else if(sheardir==3)
         sheartensor[5]=shearrate;
-    else if(sheardir=4)
+    else if(sheardir==4)
         sheartensor[6]=shearrate;
-    else if(sheardir=5)
+    else if(sheardir==5)
         sheartensor[7]=shearrate;
 
 
