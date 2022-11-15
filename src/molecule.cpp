@@ -7,19 +7,19 @@ Molecule::Molecule(std::string name, int num_mols):name(name), num_mols(num_mols
 }
 
 void Molecule::addAtoms(int index, std::string atypestring, int atype, real mass){
-    atoms.push_back(index);
-    atomtypestrings.push_back(atypestring);
-    atomtypes.push_back(atype);
-    masses.push_back(mass);
-    num_atoms=atoms.size();
+    atoms.push_back(index);                     /*adding index of the particle*/
+    atomtypestrings.push_back(atypestring);     /*adding particle type as string*/
+    atomtypes.push_back(atype);                 /*adding particle type*/
+    masses.push_back(mass);                     /*adding mass*/
+    num_atoms=atoms.size();                     /*the number of atoms in a molecule*/
     return;
 }
 
 void Molecule::addBonds(int index1, int index2, int btype){
     Ivec bd{index1, index2};
-    bonds.push_back(bd);
-    bondtypes.push_back(btype);
-    num_bonds=bonds.size();
+    bonds.push_back(bd);                        /*adding the bond*/                    
+    bondtypes.push_back(btype);                 /*adding the bond type*/
+    num_bonds=bonds.size();                     /*the number of bonds in a molecule*/
     return;
 }
 
