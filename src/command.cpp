@@ -77,6 +77,7 @@ void Command::setAnalysisProgram(){
     analysis_program["brdginterf"]=BRIDGEINTERF;
     analysis_program["brdggpd"]=BRIDGEGPDEN;
     analysis_program["nliqcl"]=NUMCLUSTER;
+    analysis_program["newprop"]=NEWPROPERTY;
     return;
 }
 
