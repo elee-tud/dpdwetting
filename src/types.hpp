@@ -82,6 +82,7 @@ int sign(T val){
 #define BRIDGEINTERF 37
 #define BRIDGEGPDEN 38
 #define NUMCLUSTER 39
+#define NEWPROPERTY 40
 
 #define TRUEPTCL 0
 #define GHOSTPTCL 1
