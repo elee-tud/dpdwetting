@@ -1,6 +1,12 @@
 #ifndef __ANALYSIS__HPP
 #define __ANALYSIS__HPP
 
+/****************************************************************************
+ * Class Analysis
+ *
+ * This class is used to anlayze basic properties of system like temperature
+ * and pressure on the fly.
+ ****************************************************************************/
 #include "initialization.hpp"
 
 namespace dpd{
@@ -25,14 +31,14 @@ public:
     Analysis(){}
     Analysis(Initialization* init);
     ~Analysis(){}
-   
-    void calculateSystemProperties();
-    void calculateTemperature();
-    void calculateStressTensor();
+  
+    void calculateSystemProperties();   //Function to calculate temperature and pressure
+    void calculateTemperature();        //Function to calculate temperature
+    void calculateStressTensor();       //Function to calculate stress
 
-    real getTemperature(){ return temperature; }
-    real getPressure(){ return pressure; }
-    Rvec getStressTensor(){ return virialt;}
+    real getTemperature(){ return temperature; }    //Returning temperature value
+    real getPressure(){ return pressure; }          //Returning pressure value
+    Rvec getStressTensor(){ return virialt;}        //Returning pressure tensor
 
     
 };

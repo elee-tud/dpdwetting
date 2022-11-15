@@ -1,6 +1,12 @@
 #ifndef __BONDED__HPP
 #define __BONDED__HPP
 
+/****************************************************************************
+ * Class Bonded
+ *
+ * The class to calculated force by bonded potential
+ ****************************************************************************/
+
 #include "decomposition.hpp"
 #include "stress.hpp"
 
@@ -31,10 +37,10 @@ public:
     Bonded(Topology* topol, Configuration* config, Decomposition* decomp);
     ~Bonded(){}
 
-    void calculateForce();
-    void calculateForce(Real3D com, real** press, real dr);
-    void communicateBondedParticles();
-    void reduceForce();
+    void calculateForce();      //Caculating particle force by bonded potential
+    void calculateForce(Real3D com, real** press, real dr);     //Calculating particle radial force by bonded potential 
+    void communicateBondedParticles();      //Getting positions of bonded particles
+    void reduceForce();     //Summing up bonded forces
     virtual Ivec getParticleIndexForCommunication(Particle* ptcl)=0;
     virtual int calculateParticleForce(Particle* ptcl)=0;
     virtual int calculateParticleForce(Particle* ptcl, Real3D com, real** press, real dr)=0;

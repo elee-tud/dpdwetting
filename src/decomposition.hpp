@@ -1,6 +1,6 @@
 /*************************************************************
- *            Class definition "Decomposition"
- *************************************************************
+ *            Class Decomposition
+ *
  *  This class is to set up the domain decomposition of the 
  * system. 
  ************************************************************/

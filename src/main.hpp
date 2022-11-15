@@ -1,6 +1,9 @@
 #ifndef __MAIN__HPP
 #define __MAIN__HPP
 
+/****************************************************************************
+ * Class main
+ ****************************************************************************/
 #include "types.hpp"
 #include "initialization.hpp"
 #include "system.hpp"

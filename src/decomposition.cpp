@@ -139,6 +139,7 @@ Decomposition::Decomposition(Control* control, Configuration* config, SetMPI* mp
 }
 
 void Decomposition::calculateDomainDivisor(){
+    /*Assigning divisor of domains in three directions*/
     if(numprocs==1)  num_domains={1,1,1};
     else if(numprocs==2)  num_domains={2,1,1};
     else if(numprocs==4)  num_domains={2,2,1};
@@ -165,15 +166,18 @@ void Decomposition::calculateDomainLength(){
     domain_length=Real3D(0.0);
     domain_min=Real3D(0.0);
     domain_max=Real3D(0.0);
-
+    
+    /*Calculating the length of each direction of the domain*/
     domain_length[0]=box[0]/num_domains[0];
     domain_length[1]=box[1]/num_domains[1];
     domain_length[2]=box[2]/num_domains[2];
 
+    /*Calculating the lower boundary of the domain*/
     domain_min[0]=my3did[0]*domain_length[0];
     domain_min[1]=my3did[1]*domain_length[1];
     domain_min[2]=my3did[2]*domain_length[2];
     
+    /*Calculating the upper boundary of the domain*/
     domain_max[0]=(my3did[0]+1)*domain_length[0];
     domain_max[1]=(my3did[1]+1)*domain_length[1];
     domain_max[2]=(my3did[2]+1)*domain_length[2];
@@ -191,9 +195,9 @@ void Decomposition::printDomainLengthInformation(){
     return;
 }
 void Decomposition::clearAllBeadInformation(){
-    mybeads.clear();
+    mybeads.clear();        /*Removing all beads from the domain*/
     for(int i=0;i<cells.size();i++){
-        cells[i]->clear();
+        cells[i]->clear();          /*Removing all beads from all cells in the domain*/
     }
     return;
 }
@@ -203,13 +207,13 @@ void Decomposition::allocateBeadsToDomain(){
     int num_beads=topology->getNbeads();
     mybeads.clear();
     for(int i=0;i<num_beads;i++){
-        int idx=getNewDomainIndex(particles[i]);
-        if(idx==myid){
-            mybeads.push_back(i);
+        int idx=getNewDomainIndex(particles[i]);        /*Calculating the domain index of a particle*/
+        if(idx==myid){          /*If its in my domain*/
+            mybeads.push_back(i);           /*It's my particle*/
             particles[i]->setTrue();
         }
         else
-            particles[i]->setNone();
+            particles[i]->setNone();        /*It's not my particle*/
     } 
     num_mybeads=mybeads.size();
     
@@ -219,9 +223,8 @@ void Decomposition::allocateBeadsToDomain(){
 
 void Decomposition::allocateBeadsToCells(){
     for(int i=0;i<num_mybeads;i++){
-        
-        int idx=getNewDomainCellIndex(particles[mybeads[i]])[1];
-        cells[idx]->addBeads(mybeads[i]);
+        int idx=getNewDomainCellIndex(particles[mybeads[i]])[1];        /*Calculating the cell index if my particles*/
+        cells[idx]->addBeads(mybeads[i]);           /*Adding the particle to a proper cell*/
     }
 
     return;
@@ -229,9 +232,9 @@ void Decomposition::allocateBeadsToCells(){
 
 
 
-int Decomposition::getNeighborProcessorID(Ivec dist){
-    Ivec neighbor=indexing_domain.addIndexToIndex(my3did, dist);
-    return indexing_domain.getIndexFrom3DIndex(neighbor);
+int Decomposition::getNeighborProcessorID(Ivec dist){           
+    Ivec neighbor=indexing_domain.addIndexToIndex(my3did, dist);        /*Obtaining the index of neighbor domains*/
+    return indexing_domain.getIndexFrom3DIndex(neighbor);               /*3D index*/
 }
 
 
@@ -247,31 +250,26 @@ bool Decomposition::calculateCellLength(){
     num_cells={0,0,0};
     cell_length={0.0, 0.0, 0.0};
 
-    num_true_cells[0]=static_cast<int>(domain_length[0]/rcut);
-    cell_length[0]=domain_length[0]/num_true_cells[0];
-    num_true_cells[1]=static_cast<int>(domain_length[1]/rcut);
-    cell_length[1]=domain_length[1]/num_true_cells[1];
-    num_true_cells[2]=static_cast<int>(domain_length[2]/rcut);
-    cell_length[2]=domain_length[2]/num_true_cells[2];
+    num_true_cells[0]=static_cast<int>(domain_length[0]/rcut);      /*Number of true cells along x*/
+    cell_length[0]=domain_length[0]/num_true_cells[0];              /*Length of each cell along x*/
+    num_true_cells[1]=static_cast<int>(domain_length[1]/rcut);      /*Number of true cells along y*/
+    cell_length[1]=domain_length[1]/num_true_cells[1];              /*Length of each cell along y*/
+    num_true_cells[2]=static_cast<int>(domain_length[2]/rcut);      /*Number of true cells along y*/
+    cell_length[2]=domain_length[2]/num_true_cells[2];              /*Length of each cell along y*/
 
-    //including ghost cells
+    /*Adding ghost cells at both boundaries*/
     num_cells[0]=num_true_cells[0]+2;
     num_cells[1]=num_true_cells[1]+2;
     num_cells[2]=num_true_cells[2]+2;
     prev_totnum_cells=totnum_cells;
-    totnum_cells=num_cells[0]*num_cells[1]*num_cells[2];
-    totnum_true_cells=num_true_cells[0]*num_true_cells[0]*num_true_cells[0];
-    totnum_ghost_cells=totnum_cells-totnum_true_cells;
+    totnum_cells=num_cells[0]*num_cells[1]*num_cells[2];        /*Total number of cells*/
+    totnum_true_cells=num_true_cells[0]*num_true_cells[0]*num_true_cells[0];        /*Total number of true cells*/
+    totnum_ghost_cells=totnum_cells-totnum_true_cells;          /*The number of ghost cells*/
     
     for(int i=prev_totnum_cells; i<totnum_cells;i++){
-        cells.push_back(new Cell(myid, num_domains, i, num_cells));
+        cells.push_back(new Cell(myid, num_domains, i, num_cells));     /*Making a whole cell list*/
     }
-    /*
-    if(mpi->isMaster()){
-        std::cout << "previous cell number per domain=" << prev_totnum_cells << std::endl;
-        std::cout << "current cell number per domain=" << totnum_cells <<  std::endl;
-    }
-    */
+
     for(int i=prev_totnum_cells-1;i>=totnum_cells;i--){
         delete cells[i];
     }
@@ -294,12 +292,12 @@ void Decomposition::makeCellLists(){
     ghostcells=Ivec{};
     realcells=Ivec{};
     for(int i=0;i<cells.size();i++){
-        if(cells[i]->isRealCell())
+        if(cells[i]->isRealCell())      /*If it's a real cell*/
             realcells.push_back(i);
-        if(cells[i]->isGhostCell())
+        if(cells[i]->isGhostCell())     /*If it's a ghost cell*/
             ghostcells.push_back(i);
         else
-            truecells.push_back(i);
+            truecells.push_back(i);     /*If it's a true (not a ghost) cell*/
     }
 
     return;
@@ -318,52 +316,55 @@ void Decomposition::communicateGhostBeads(){
     }
 
     for(int i=0;i<cells.size();i++){
-        if(cells[i]->isRealCell()){
-            Ivec2D ghostindex=cells[i]->getGhostIndex();
-            Ivec beads=cells[i]->getBeads();
+        if(cells[i]->isRealCell()){     /*If its a real cell*/
+            Ivec2D ghostindex=cells[i]->getGhostIndex();        /*Finding cell/domain indices of the ghost of this real cell*/
+            Ivec beads=cells[i]->getBeads();                    /*Beads in this cell*/
 
             for(int j=0;j<beads.size();j++){
                 for(int k=0;k<ghostindex.size();k++){
                     int dest=ghostindex[k][0];
-                    ptcls_to_send[dest].push_back(beads[j]);
-                    cellidx_to_send[dest].push_back(ghostindex[k][1]);
+                    ptcls_to_send[dest].push_back(beads[j]);        /*Building particle list to send*/
+                    cellidx_to_send[dest].push_back(ghostindex[k][1]);  /*Making a list of cells that particles to be sent*/
                 }
             }
         }
-        else if(cells[i]->isGhostCell()){
-            Ivec beads=cells[i]->getBeads();
+        else if(cells[i]->isGhostCell()){   /*If it's a ghost cell*/
+            Ivec beads=cells[i]->getBeads();            /*Finding beads in a cell*/
             for(int j=0;j<beads.size();j++){
-                if(particles[beads[j]]->existsHere()!=TRUEPTCL)
-                    particles[beads[j]]->setNone();
+                if(particles[beads[j]]->existsHere()!=TRUEPTCL)     /*if the particle is not here*/
+                    particles[beads[j]]->setNone();                 /*Removing information*/
             }
             cells[i]->clear();
         }
     }
-    Ivec ghostshere=ptcls_to_send[myid];
+    Ivec ghostshere=ptcls_to_send[myid];            
     Ivec ghostcells=cellidx_to_send[myid];
     for(int i=0;i<ghostshere.size();i++){
-        cells[ghostcells[i]]->addBeads(ghostshere[i]);
+        cells[ghostcells[i]]->addBeads(ghostshere[i]);      /*Adding beads to ghost cells*/
     }
-//    std::cout << mpi->rank() << ptcls_to_send << std::endl;
+
+
     for(int i=0;i<numprocs;i++){
         if(myid!=i){
             int sendsize=ptcls_to_send[i].size();
             int recvsize=0;
             MPI_Sendrecv(&sendsize, 1, MPI_INT, i, 0, &recvsize, 1, MPI_INT, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            /*Serialization of the information for communication*/
             Rvec sendcoord=serializeNCoords(ptcls_to_send[i], particles);
             Rvec sendveloc=serializeNVelocs(ptcls_to_send[i], particles);
             Ivec recvbeads(recvsize);
             Ivec recvcells(recvsize);
             Rvec recvcoord(3*recvsize);
             Rvec recvveloc(3*recvsize);
-//            std::cout << "send from " << mpi->rank() << " to " << i  ;
+            /*Sending/receiving particle informations to/from other domains*/
             MPI_Sendrecv(&ptcls_to_send[i][0], sendsize, MPI_INT, i, 1, &recvbeads[0], recvsize, MPI_INT, i, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
             MPI_Sendrecv(&cellidx_to_send[i][0], sendsize, MPI_INT, i, 2, &recvcells[0], recvsize, MPI_INT, i, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-//                std::cout << sendcoord.size() << std::endl;
             MPI_Sendrecv(&sendcoord[0], 3*sendsize, MPI_DOUBLE, i, 3, &recvcoord[0], 3*recvsize, MPI_DOUBLE, i, 3, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
             MPI_Sendrecv(&sendveloc[0], 3*sendsize, MPI_DOUBLE, i, 4, &recvveloc[0], 3*recvsize, MPI_DOUBLE, i, 4, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            /*Deserialization of the information for communication*/
             deserializeNCoords(recvbeads, particles, recvcoord);
             deserializeNVelocs(recvbeads, particles, recvveloc);
+            /*Adding information about new particle received*/
             for(int j=0;j<recvsize;j++){
                 cells[recvcells[j]]->addBeads(recvbeads[j]);
                 particles[recvbeads[j]]->setGhost();
@@ -371,34 +372,22 @@ void Decomposition::communicateGhostBeads(){
         }
     }
     MPI_Barrier(MPI_COMM_WORLD);
-    /*
-    for(int i=0;i<cells.size();i++){
-        Ivec mycellbeads=cells[i]->getBeads();
-        for(int j=0;j<mycellbeads.size();j++){
-            if(mycellbeads[j]==0){
-                cells[i]->printBeads();
-            }
-        }
-    }
-    */
     matchGhostsRealBeads();
     assignParticleType();
     return;
 }
 
-
+/*This is the subroutine for refreshing domain beads
+ * See the subrouting above*/
 void Decomposition::refreshDomainBeads(){
     Ivec2D ptcls_to_send(numprocs, Ivec());
     for(int i=0;i<numprocs;i++){
         ptcls_to_send[i].reserve(maxnbeads);
     }
 
-//    std::cout << particles[47704]->coord << std::scientific << std::endl;
     for(int i=0;i<totnum_cells;i++){
         if(!cells[i]->isGhostCell()){
-//            std::cout << 0 << std::flush;
             Ivec beads=cells[i]->getBeads();
-//            std::cout << 1<< std::flush;
 
             int sendsize=beads.size();
             for(int j=0;j<sendsize;j++){
@@ -419,8 +408,6 @@ void Decomposition::refreshDomainBeads(){
                         
                 }
             }
-//            std::cout << 2<< std::flush;
-//            std::cout << std::endl<< std::flush;
         }
     }
     for(int i=0;i<numprocs;i++){
@@ -442,7 +429,6 @@ void Decomposition::refreshDomainBeads(){
                 int newcellidx=getNewCellIndex(particles[recvbeads[j]]);
                 cells[newcellidx]->addBeads(recvbeads[j]);
                 addBeads(recvbeads[j]);
-//                particles[recvbeads[j]]->setTrue();
             }
         }
     }
@@ -450,22 +436,23 @@ void Decomposition::refreshDomainBeads(){
     return;
 }
 
+
 void Decomposition::assignParticleType(){
-    for(int i=0;i<particles.size();i++){
-        particles[i]->setNone();
+    for(int i=0;i<particles.size();i++){    
+        particles[i]->setNone();        /*Changing all particles types into none*/
     }
     for(int i=0;i<totnum_cells;i++){
-        if(cells[i]->isGhostCell()){
+        if(cells[i]->isGhostCell()){        /*If it is a ghost cell*/
             Ivec beads=cells[i]->getBeads();
             for(int j=0;j<beads.size();j++){
-                particles[beads[j]]->setGhost();
+                particles[beads[j]]->setGhost();        /*a particle in this cell is a ghost*/
             }
         }
-        else if(!cells[i]->isGhostCell()){
+        else if(!cells[i]->isGhostCell()){      /*If it's noa a ghost cell*/
             Ivec beads=cells[i]->getBeads();
 
             for(int j=0;j<beads.size();j++){
-                particles[beads[j]]->setTrue();
+                particles[beads[j]]->setTrue();     /*a particle is a true particle*/
             }
         }
     }
@@ -483,12 +470,11 @@ int Decomposition::getNewCellIndex(Particle* ptcl){
     cellidx[0]=cellidx[0]%num_true_cells[0]+1;
     cellidx[1]=cellidx[1]%num_true_cells[1]+1;
     cellidx[2]=cellidx[2]%num_true_cells[2]+1;
-    return indexing_cell.getIndexFrom3DIndex(cellidx);
+    return indexing_cell.getIndexFrom3DIndex(cellidx);  /*Returning a cell index of the particle*/
 }
 
 int Decomposition::getNewDomainIndex(Particle* ptcl){
     Ivec domainidx(3,0);
-//    Real3D prevcoord=ptcl->coord;
     ptcl->setCoord(pbc.getVectorIntoBox(ptcl->coord));
     domainidx[0]=static_cast<int>(ptcl->getCoord()[0]/cell_length[0]);
     domainidx[1]=static_cast<int>(ptcl->getCoord()[1]/cell_length[1]);
@@ -496,10 +482,7 @@ int Decomposition::getNewDomainIndex(Particle* ptcl){
     domainidx[0]=domainidx[0]/num_true_cells[0];
     domainidx[1]=domainidx[1]/num_true_cells[1];
     domainidx[2]=domainidx[2]/num_true_cells[2];
-//    if(indexing_domain.getIndexFrom3DIndex(domainidx)>numprocs){
-//        std::cout <<"prev_coord=" << prevcoord << "after=" <<  ptcl->coord << "," << indexing_domain.getIndexFrom3DIndex(domainidx) << std::flush << std::endl;
-//    }
-    return indexing_domain.getIndexFrom3DIndex(domainidx);
+    return indexing_domain.getIndexFrom3DIndex(domainidx);  /*Returning a domain index of the particle*/
 }
 
 Ivec Decomposition::getNewDomainCellIndex(Particle* ptcl){
@@ -519,31 +502,32 @@ Ivec Decomposition::getNewDomainCellIndex(Particle* ptcl){
     cellidx[1]=cellidx[1]%num_true_cells[1]+1;
     cellidx[2]=cellidx[2]%num_true_cells[2]+1;
     Ivec result={indexing_domain.getIndexFrom3DIndex(domainidx), indexing_cell.getIndexFrom3DIndex(cellidx)};
+    /*Returning a set of cell and domain indices of the particle*/
     return result;
 }
 
 
 void Decomposition::addBeads(int index){
-    mybeads.push_back(index);
+    mybeads.push_back(index);       /*Adding a bead to the domain*/
     num_mybeads++;
     return;
 }
 
 void Decomposition::addBeads(Ivec indices){
     for(int i=0;i<indices.size();i++)
-        mybeads.push_back(indices[i]);
+        mybeads.push_back(indices[i]);      /*Adding multiple beads to the domain*/
     num_mybeads+=indices.size();
     return;
 }
 void Decomposition::removeBeads(int index){
-    mybeads.erase(std::remove(mybeads.begin(), mybeads.end(), index), mybeads.end());
+    mybeads.erase(std::remove(mybeads.begin(), mybeads.end(), index), mybeads.end());       /*Removing a bead from the domain*/
     num_mybeads--;
     return;
 }
 
 void Decomposition::removeBeads(Ivec indices){
     for(int i=0;i<indices.size();i++)
-        mybeads.erase(std::remove(mybeads.begin(), mybeads.end(), indices[i]), mybeads.end());
+        mybeads.erase(std::remove(mybeads.begin(), mybeads.end(), indices[i]), mybeads.end());  /*Removing multiple beads from the domain*/
     num_mybeads-=indices.size();
     return;
 }
@@ -559,7 +543,7 @@ void Decomposition::printCellInformation(){
     }
     return;
 }
-
+/*Matching ghost and real beads information*/
 void Decomposition::matchGhostsRealBeads(){
     for(int i=0;i<numprocs;i++){
         ghosts[i].clear();
@@ -625,6 +609,7 @@ Ivec2D Decomposition::findProcsOfRealBeads(){
 }
  */   
 
+/*Setting all information is not synced*/
 void Decomposition::setUnsynced(){
     is_coord_synced=false;
     is_veloc_synced=false;
@@ -634,6 +619,7 @@ void Decomposition::setUnsynced(){
     return;
 }
 
+/*Getting information of unfrozen beads*/
 Ivec Decomposition::getUnfrozenBeads(){
     int num_mybeads=mybeads.size();
     Ivec myufbeads={};
@@ -644,6 +630,8 @@ Ivec Decomposition::getUnfrozenBeads(){
     return myufbeads;
 }
 
+
+/*Gathering positions of true particles all over the domains*/
 void Decomposition::gatherCoords(){
     if(!is_coord_synced){
         if(mpi->isMaster()){
@@ -680,6 +668,8 @@ void Decomposition::gatherCoords(){
 
     return;
 }
+
+/*Gathering velocities of true particles all over the domains*/
 void Decomposition::gatherVelocs(){
     if(!is_veloc_synced){
 
@@ -717,6 +707,7 @@ void Decomposition::gatherVelocs(){
     return;
 }
 
+/*Gathering forces of true particles all over the domains*/
 void Decomposition::gatherForces(){
     if(!is_force_synced){
         if(mpi->isMaster()){
@@ -754,6 +745,7 @@ void Decomposition::gatherForces(){
 }
 
 
+/*Gathering local densities of true particles all over the domains*/
 void Decomposition::gatherDensities(){
     if(!is_density_synced){
         if(mpi->isMaster()){
@@ -793,6 +785,8 @@ void Decomposition::gatherDensities(){
 
     return;
 }
+
+/*Gathering particle stresses of true particles all over the domains*/
 void Decomposition::gatherStresses(){
     if(!is_stress_synced){
         if(mpi->isMaster()){
@@ -828,6 +822,8 @@ void Decomposition::gatherStresses(){
     is_stress_synced=true;
     return;
 }
+
+/*Gathering all information*/
 void Decomposition::gatherAll(){
     gatherCoords();
     gatherVelocs();
@@ -839,7 +835,7 @@ void Decomposition::gatherAll(){
 
 
 
-
+/*Resetting box information*/
 void Decomposition::resetBox(Real3D newbox){
     box=newbox;
     config->setBox(box);
@@ -860,6 +856,7 @@ void Decomposition::resetBox(Real3D newbox){
     }
 }
 
+/*Refreshing beads when the cell number in a domain changes*/
 void Decomposition::refreshBeadsWhenChangingCellNumber(){
     Ivec2D ptcls_to_send(numprocs, Ivec());
     for(int i=0;i<numprocs;i++){
@@ -870,17 +867,13 @@ void Decomposition::refreshBeadsWhenChangingCellNumber(){
     for(int i=0;i<ori_beads.size();i++){
         Particle* ptcl=particles[ori_beads[i]];
         Ivec newindex=getNewDomainCellIndex(ptcl);
-//        if(ori_beads[i]==572)
-//            std::cout <<  "!!HERE particle " << particles[ori_beads[i]]->getParticleIndex() << " in rank " << mpi->rank() << std::flush << std::endl;
         if(newindex[0]!=myid){
             ptcls_to_send[newindex[0]].push_back(ori_beads[i]);
             removeBeads(ori_beads[i]);
             particles[ori_beads[i]]->setNone();
-//            if(ori_beads[i]==572) std::cout << "moves to " << newindex[0] << std::endl;
         }
         else{
             cells[newindex[1]]->addBeads(ori_beads[i]);
-//            if(ori_beads[i]==572) std::cout << " stays in the process, cell " << newindex[1] << std::endl;
         }
     }
     for(int i=0;i<numprocs;i++){
@@ -910,7 +903,7 @@ void Decomposition::refreshBeadsWhenChangingCellNumber(){
 }
 
 
-
+/*Finding where is the true image of the particle*/
 void Decomposition::whereIsTheBead(int index){
     /*
     for(int i=0;i<mybeads.size();i++){
@@ -937,7 +930,7 @@ void Decomposition::whereIsTheBead(int index){
 }
 
 
-
+/*Setting the existence of the particle*/
 void Decomposition::setExistence(){
     for(int i=0;i<particles.size();i++){
         particles[i]->setNone();
