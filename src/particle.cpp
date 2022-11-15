@@ -3,6 +3,7 @@
 
 using namespace dpd;
 Particle::Particle(int particleindex, int molindex, int atype, real mass, bool is_frozen):particleindex(particleindex), molindex(molindex), atype(atype), mass(mass), is_frozen(is_frozen){
+    /*Assigning default values*/
     coord=Real3D(0.0);
     veloc=Real3D(0.0);
     prevcoord=Real3D(0.0);
@@ -31,8 +32,8 @@ void Particle::setMoleculeString(std::string _molstring){
 }
 
 void Particle::addBond(Particle* bondedparticle, int bondtype){
-    bonded.push_back(bondedparticle);
-    bondtypes.push_back(bondtype);
+    bonded.push_back(bondedparticle);       /*adding the bonded particle*/
+    bondtypes.push_back(bondtype);          /*adding the bond type*/
     return;
 }
 
