@@ -3,8 +3,9 @@
 2. Python3
 
 <Installation>
-1. cd build/
+1. cd [main directory]
 2. make
+3. source DPDWRC
 
 
 <Usage>
