@@ -1,0 +1,19 @@
+temperature     1.0     ;temperature
+totalsteps      100000  ;total integration steps
+timestep        0.02    ;integration time step
+integrator      vv   ;integration method
+nonbonded       mdpd    ;nonbonded interaction type
+bondlength      harmonic ;bondlength interaction type          
+;randseed        123123 ;random seed
+gamma           4.5     ;gamma 
+cellcutoff      1.0
+rmcomvfreq      100
+xtrjfreq        100
+xlogfreq        50
+xstrfreq        500
+xfrcfreq        500
+;pullspringk     0.01
+;wall            solid z
+;wallposz        5.0 65.0
+
+
