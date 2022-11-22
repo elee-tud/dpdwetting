@@ -2,7 +2,7 @@
 CC		= mpicxx
 INC		= 
 LIB		= 
-CXXFLAGS	=  -g -std=c++0x -O2 
+CXXFLAGS	=  -g -std=c++0x -O2
 
 SRCDIR1 = src
 SRCDIR2 = src/extensions src/externalforce src/integrators src/nonbonded src/bonded src/tools
