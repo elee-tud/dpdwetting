@@ -107,12 +107,12 @@ void DropSize::calculateStep(int step){
     Rvec hdensity=Rvec(numz, 0.);
     for(int i=0;i<nliqptcls;i++){
         int index=static_cast<int>((particles[liquididx[i]]->coord[2]-surfaceb-0.5*dz)/dz);
-        if(index>=0 && index<numz)
+        if(index>=0 && index<numz){
             particles_atz[index]->addParticle(particles[liquididx[i]]);
         real rdist=pow(pow(particles[liquididx[i]]->coord[0]-comxy[0], 2.)+pow(particles[liquididx[i]]->coord[1]-comxy[1], 2.), 0.5);
         if(rdist<hradius)
             hdensity[index]+=1.;
-
+        }
     }
 
     for(int i=0;i<numz;i++){
