@@ -44,7 +44,6 @@ void DropSize::getSpecificParameters(){
     command->getCommandSingleOption("-dd", dcrit, &dcrit);
     command->getCommandSingleOption("-dr", dr, &dr);
     command->getCommandSingleOption("-hr", hradius, &hradius);
-    command->getCommandSingleOption("-hr", hradius, &hradius);
     command->getCommandSingleOption("-ph", pilheight, &pilheight);
     if(with_wall){
         surfaceb=control->getWallMinPosition()[2]+pilheight;
